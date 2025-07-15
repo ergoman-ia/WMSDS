@@ -1,0 +1,2066 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>근골격계 부담작업 체크리스트</title>
+    <style>
+        /* Base styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            min-height: 100vh;
+            background-color: #f3f4f6; /* bg-gray-100 */
+            padding: 1rem; /* p-4 */
+            margin: 0; /* Ensure no default body margin */
+            font-size: 1.05em; /* Increase font size by 5% relative to default browser font size */
+        }
+
+        /* Container styles */
+        .main-container {
+            max-width: 56rem; /* max-w-4xl */
+            margin-left: auto;
+            margin-right: auto; /* mx-auto */
+            background-color: #fff; /* bg-white */
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 10px 15px rgba(0,0,0,0.05); /* shadow-lg (simplified) */
+            padding: 1.5rem; /* p-6 */            
+        }
+        @media (min-width: 768px) { /* md:p-8 */
+            .main-container {
+                padding: 2rem;
+            }
+        }
+
+        /* Headings and Paragraphs */
+        .main-title {
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 700; /* font-bold */
+            color: #1f2937; /* text-gray-800 */
+            margin-bottom: 1.5rem; /* mb-6 */
+            text-align: center; /* text-center */
+        }
+        .intro-text {
+            color: #4b5563; /* text-gray-600 */
+            margin-bottom: 1.5rem; /* mb-6 */
+            text-align: center; /* text-center */
+        }
+        .section-title {
+            font-size: 1.125rem; /* text-lg */
+            font-weight: 600; /* font-semibold */
+            color: #374151; /* text-gray-700 */
+            margin-bottom: 0.5rem; /* mb-2 */
+        }
+        .small-info-text {
+            font-size: 0.875em; /* text-s - scaled from body */
+            color: #6b7280; /* text-gray-500 */
+        }
+        .checklist-prompt {
+            color: #374151; /* text-gray-700 */
+            font-size: 1.125em; /* text-lg - scaled from body */
+            font-weight: 600; /* font-semibold */
+            margin-top: 2rem; /* mt-8 */
+            margin-bottom: 1rem; /* mb-4 */
+        }
+
+        /* Form spacing */
+        .form-section-space > *:not(:last-child) {
+            margin-bottom: 1.5rem; /* space-y-6 */
+        }
+        .checklist-item-space > *:not(:last-child) {
+            margin-bottom: 0.75rem; /* space-y-3 */
+        }
+        .sub-checklist-space > *:not(:last-child) {
+            margin-bottom: 0.5rem; /* space-y-2 */
+        }
+
+        /* Input fields */
+        .form-input {
+            width: 100%; /* w-full */
+            padding: 0.5rem 1rem; /* px-4 py-2 */
+            border: 1px solid #d1d5db; /* border border-gray-300 */
+            border-radius: 0.375rem; /* rounded-md */
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+            font-size: 1em; /* text-base - scaled from body */
+        }
+        .form-input:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+            box-shadow: 0 0 0 2px #fff, 0 0 0 4px #3b82f6; /* focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 */
+            border-color: #3b82f6; /* focus:border-blue-500 */
+        }
+        .text-center-input {
+            text-align: center; /* text-center */
+        }
+        .duration-input-group {
+            display: flex; /* flex */
+            align-items: center; /* items-center */
+            gap: 0.5rem; /* space-x-2 */
+        }
+        .duration-input {
+            width: 3rem; /* Adjusted for 50% reduction */
+        }
+        @media (min-width: 768px) { /* md:flex-row md:items-center md:space-x-4 */
+            .duration-label-group {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                gap: 1rem;
+            }
+            .duration-label-group > label {
+                margin-bottom: 0; /* md:mb-0 */
+            }
+        }
+
+        /* File Upload Area */
+        .file-upload-grid {
+            display: flex; /* flex */
+            flex-wrap: wrap; /* flex-wrap */
+            gap: 1rem; /* gap-4 */
+            justify-content: center; /* justify-center */
+        }
+        .file-upload-box {
+            margin-top: 0.25rem; /* mt-1 */
+            padding: 1rem; /* p-4 */
+            border: 2px dashed #d1d5db; /* border-2 border-dashed border-gray-300 */
+            border-radius: 0.375rem; /* rounded-md */
+            text-align: center; /* text-center */
+            color: #6b7280; /* text-gray-500 */
+            position: relative; /* relative */
+            display: flex; /* flex */
+            flex-direction: column; /* flex-col */
+            align-items: center; /* items-center */
+            justify-content: center; /* justify-content */
+            min-height: 9.375rem; /* min-h-[150px] (adjusted for multiple small boxes) */
+            width: 100%; /* w-full */
+        }
+        @media (min-width: 768px) { /* md:w-[calc(33%-1rem)] */
+            .file-upload-box {
+                /* Further reduced width for 3 items on one line, accounting for gaps */
+                width: calc((100% / 4) - 0.75rem); /* Adjusted calculation for 3 items with 1rem gaps */
+            }
+        }
+        .preview-media {
+            max-width: 100%; /* max-w-full */
+            max-height: 6.25rem; /* max-h-[100px] */
+            object-fit: contain; /* object-contain */
+            border-radius: 0.375rem; /* rounded-md */
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06); /* shadow-md */
+        }
+        .file-upload-label {
+            display: inline-flex; /* inline-flex */
+            align-items: center; /* items-center */
+            padding: 0.5rem 1rem; /* px-4 py-2 */
+            margin-top: 1rem; /* mt-4 */
+            border: 1px solid transparent; /* border border-transparent */
+            font-size: 0.875em; /* text-sm - scaled from body */
+            font-weight: 500; /* font-medium */
+            border-radius: 0.375rem; /* rounded-md */
+            box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); /* shadow-sm */
+            color: #fff; /* text-white */
+            background-color: #2563eb; /* bg-blue-600 */
+            cursor: pointer; /* cursor-pointer */
+            transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform; /* transition */
+            transition-duration: 300ms; /* duration-300 */
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); /* ease-in-out */
+        }
+        .file-upload-label:hover {
+            background-color: #1d4ed8; /* hover:bg-blue-700 */
+        }
+        .selected-file-name {
+            margin-top: 0.5rem; /* mt-2 */
+            font-size: 0.875em; /* text-sm - scaled from body */
+            color: #374151; /* text-gray-700 */
+        }
+
+        /* Checkboxes and Radios */
+        .checklist-item-row {
+            display: flex; /* flex */
+            align-items: flex-start; /* items-start */
+            flex-direction: column; /* flex-col */
+        }
+        .main-checkbox-wrapper {
+            display: flex; /* flex */
+            align-items: flex-start; /* items-start */
+            width: 100%; /* w-full */
+        }
+        .main-checkbox {
+            margin-top: 0.25rem; /* mt-1 */
+            height: 1.25em; /* h-5 - scaled from body */
+            width: 1.25em; /* w-5 - scaled from body */
+            color: #2563eb; /* text-blue-600 */
+            border-radius: 0.25em; /* rounded - scaled from body */
+            border: 1px solid #d1d5db; /* border-gray-300 */
+            cursor: pointer; /* cursor-pointer */
+            accent-color: #2563eb; /* For native checkbox color */
+        }
+        .main-checkbox:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+            box-shadow: 0 0 0 2px #fff, 0 0 0 4px #3b82f6; /* focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 */
+            border-color: #3b82f6; /* focus:border-blue-500 */
+        }
+        .main-label {
+            margin-left: 0.75rem; /* ml-3 */
+            font-size: 1em; /* text-base - scaled from body */
+            color: #374151; /* text-gray-700 */
+            cursor: pointer; /* cursor-pointer */
+        }
+        .sub-checklist-wrapper {
+            margin-left: 2rem; /* ml-8 */
+            margin-top: 0.5rem; /* mt-2 */
+            /* space-y-2 handled by sub-checklist-space */
+        }
+        .sub-item-row {
+            display: flex; /* flex */
+            align-items: flex-start; /* items-start */
+        }
+        .sub-radio, .sub-checkbox {
+            margin-top: 0.25rem; /* mt-1 */
+            height: 1em; /* h-4 - scaled from body */
+            width: 1em; /* w-4 - scaled from body */
+            border: 1px solid #d1d5db; /* border-gray-300 */
+            cursor: pointer; /* cursor-pointer */
+            accent-color: #7e22ce; /* text-purple-600 or text-blue-600 for checkbox */
+        }
+        .sub-radio {
+            border-radius: 9999px; /* rounded-full */
+            color: #7e22ce; /* text-purple-600 */
+        }
+        .sub-radio:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+            box-shadow: 0 0 0 2px #fff, 0 0 0 4px #9333ea; /* focus:ring-purple-500 */
+        }
+        .sub-checkbox {
+            border-radius: 0.25em; /* rounded - scaled from body */
+            color: #2563eb; /* text-blue-600 */
+        }
+         .sub-checkbox:focus {
+            box-shadow: 0 0 0 2px #fff, 0 0 0 4px #3b82f6; /* focus:ring-blue-500 */
+        }
+        .sub-label {
+            margin-left: 0.75rem; /* ml-3 */
+            font-size: 0.875em; /* text-sm - scaled from body */
+            color: #4b5563; /* text-gray-600 */
+            cursor: pointer; /* cursor-pointer */
+        }
+        .sub-label.red-bold-text { /* New class for specific labels */
+            color: #b91c1c; /* Red color */
+            font-weight: 700; /* Bold font */
+        }
+
+        .nested-sub-checklist {
+            margin-left: 2rem; /* ml-8 */
+            margin-top: 0.5rem; /* mt-2 */
+            /* space-y-2 handled by sub-checklist-space */
+        }
+        .nested-radio-pink {
+            accent-color: #ec4899; /* text-pink-600 */
+        }
+        .nested-radio-pink:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+            box-shadow: 0 0 0 2px #fff, 0 0 0 4px #ec4899; /* focus:ring-pink-500 */
+        }
+        .nested-radio-indigo {
+            accent-color: #4f46e5; /* text-indigo-600 */
+        }
+        .nested-radio-indigo:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+            box-shadow: 0 0 0 2px #fff, 0 0 0 4px #6366f1; /* focus:ring-indigo-500 */
+        }
+        .grouping-box {
+            padding: 0.75rem; /* p-3 */
+            background-color: #f9fafb; /* bg-gray-50 */
+            border: 1px solid #e5e7eb; /* border border-gray-200 */
+            border-radius: 0.375rem; /* rounded-md */
+        }
+
+
+        /* Buttons */
+        .button-group {
+            display: flex; /* flex */
+            flex-direction: column; /* flex-col */
+            gap: 1rem; /* space-y-4 */
+        }
+        @media (min-width: 768px) { /* md:flex-row md:space-x-4 md:space-y-0 */
+            .button-group {
+                flex-direction: row;
+                gap: 1rem;
+                margin-top: 0; /* md:space-y-0 implies this */
+            }
+        }
+        .btn {
+            flex: 1; /* flex-1 */
+            padding: 0.75rem 1.5rem; /* px-6 py-3 */
+            font-weight: 700; /* font-bold */
+            color: #fff; /* text-white */
+            border-radius: 0.5rem; /* rounded-lg */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+            border: none;
+            cursor: pointer;
+            outline: none;
+            transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform; /* transition */
+            transition-duration: 300ms; /* duration-300 */
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); /* ease-in-out */
+        }
+        .btn-blue {
+            background-image: linear-gradient(to right, #3b82f6, #2563eb); /* bg-gradient-to-r from-blue-500 to-blue-700 */
+        }
+        .btn-blue:hover {
+            background-image: linear-gradient(to right, #2563eb, #1d4ed8); /* hover:from-blue-600 hover:to-blue-800 */
+        }
+        .btn-blue:focus {
+            box-shadow: 0 0 0 2px #fff, 0 0 0 4px #3b82f6; /* focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 */
+        }
+        .btn-green {
+            background-image: linear-gradient(to right, #10b981, #059669); /* bg-gradient-to-r from-green-500 to-green-700 */
+        }
+        .btn-green:hover {
+            background-image: linear-gradient(to right, #059669, #047857); /* hover:from-green-600 hover:to-green-800 */
+        }
+        .btn-green:focus {
+            box-shadow: 0 0 0 2px #fff, 0 0 0 4px #10b981; /* focus:ring-2 focus:ring-offset-2 focus:ring-green-500 */
+        }
+        .btn-red { /* New style for reset button */
+            background-image: linear-gradient(to right, #ef4444, #dc2626); /* bg-gradient-to-r from-red-500 to-red-700 */
+        }
+        .btn-red:hover {
+            background-image: linear-gradient(to right, #dc2626, #b91c1c); /* hover:from-red-600 hover:to-red-800 */
+        }
+        .btn-red:focus {
+            box-shadow: 0 0 0 2px #fff, 0 0 0 4px #ef4444; /* focus:ring-2 focus:ring-offset-2 focus:ring-red-500 */
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Messages and Results */
+        .analysis-result-box {
+            margin-top: 2rem; /* mt-8 */
+            padding: 1.5rem; /* p-6 */
+            background-color: #f0fdf4; /* bg-green-50 */
+            border: 1px solid #dcfce7; /* border border-green-200 */
+            border-radius: 0.5rem; /* rounded-lg */
+            box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.06); /* shadow-inner */
+            color: #374151; /* Default text color for analysis result content - black */
+        }
+        .analysis-result-box h2 {
+            /* 3.375em * 0.8 = 2.7em */
+            font-size: 2.7em; /* Scaled down to 80% of previous 3.375em */
+            font-weight: 700; /* font-bold */
+            color: #166534; /* text-green-800 */
+            margin-bottom: 1rem; /* mb-4 */
+            text-align: center; /* Center align this heading */
+        }
+        .analysis-content-area {
+            /* No explicit color here, inherits from parent (.analysis-result-box) */
+        }
+        .analysis-content-area > *:not(:last-child) {
+            margin-bottom: 0.5rem; /* space-y-2 */
+        }
+        .analysis-scaled-text {
+            font-size: 1.2em; /* 1.2 times current font size for specific paragraphs */
+        }
+        .analysis-strong-text {
+            color: #0c4a6e; /* text-green-900 (darker shade for strong) */
+            font-weight: 700;
+        }
+        .analysis-list {
+            list-style-type: none; /* Removed disc */
+            margin-left: 1rem; /* ml-4 */
+        }
+        .analysis-image-container {
+            display: flex; /* Use flexbox for horizontal alignment */
+            gap: 0.5rem; /* Space between images */
+            margin-top: 0.5rem; /* Margin below the label */
+            flex-wrap: wrap; /* Allow images to wrap to the next line on smaller screens */
+            margin-left: 50px; /* Changed from 20px to 50px */
+        }
+        .analysis-image {
+            width: 130px; /* 100px * 1.3 */
+            height: 130px; /* 100px * 1.3 */
+            object-fit: cover; /* Ensures image covers the area without distortion */
+            border-radius: 0.375rem; /* rounded-md */
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06); /* shadow-md */
+        }
+
+        /* Specific colors for messages */
+        .text-red-700 { color: #b91c1c; } /* For "부담작업 가능성이 있습니다." */
+        
+        /* Style for unselected main item text (green) */
+        .unselected-main-text {
+            color: #15803d; /* Green */
+            font-weight: normal;
+        }
+
+        /* Style for "(선택하지 않음)" text (red) */
+        .not-selected-text {
+            color: #b91c1c; /* Red */
+            font-weight: normal; /* Ensure not bold */
+        }
+        
+        /* For "하부 항목 선택하지 않음" text (red) */
+        .not-selected-sub-item-text {
+            color: #b91c1c; /* Red */
+            font-weight: normal;
+        }
+
+        /* Dotted box for final message */
+        .final-message-box {
+            border: 2px dotted #9ca3af; /* border-gray-400 */
+            padding: 1rem;
+            margin-top: 1.5rem;
+            border-radius: 0.375rem;
+            text-align: center;
+            font-weight: 700;
+            color: #374151;
+        }
+
+        /* Utility classes */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Print styles */
+        @media print {
+            /* Set page size to A4 */
+            @page {
+                size: A4;
+            }
+
+            /* Hide the form, buttons, main title, and intro text when printing */
+            #assessmentForm,
+            .print-hidden,
+            .main-title, /* Added to hide main title */
+            .intro-text /* Added to hide intro text */
+            {
+                display: none !important;
+            }
+
+            /* Ensure the analysis result is visible and takes full width when printing */
+            #analysisResult {
+                display: block !important;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+                background-color: transparent;
+                border: none;
+                color: #000; /* Ensure black text for printing */
+            }
+
+            .main-container { /* Adjusted from specific class to general */
+                padding: 0 !important;
+                box-shadow: none !important;
+            }
+
+            h1, p {
+                margin-top: 0 !important;
+                margin-bottom: 0.5rem !important;                
+            }
+
+            #analysisResult h2 {
+                font-size: 1.5em; /* Scaled from body */
+                margin-bottom: 1rem;
+            }
+            #analysisResult p, #analysisResult ul {
+                font-size: 0.9em; /* Scaled from body */
+            }
+            /* Ensure messages in print are readable */
+            .text-red-700 { color: #880000; } /* Darker red for print */
+            .unselected-main-text { color: #008800; } /* Darker green for print */
+            .not-selected-text { color: #880000; } /* Darker red for print */
+            .not-selected-sub-item-text { color: #880000; } /* Darker red for print */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4">
+    <div class="main-container">
+        <h1 class="main-title" style="color:green;">근골격계부담작업 해당 여부 체크리스트</h1>
+        <p class="intro-text">
+            이 체크리스트는 사업장의 단위작업이 근골격계부담작업에 해당하는지 여부를 식별하는데 도움을 주기 위해 제작되었습니다.<br /> 각 항목을 신중하게 확인하고 해당되는 경우 체크해주시기 바랍니다. </p>
+
+        <form id="assessmentForm" class="form-section-space">
+            <div>
+                <label for="workplaceName" class="section-title">
+                    ▶ 작업장/공정명/단위작업명:
+                </label>
+                <input
+                    type="text"
+                    id="workplaceName"
+                    class="form-input"
+                    placeholder="예: 조립 라인 포장 작업"
+                    required
+                />
+            </div>
+            <p class="small-info-text">
+                (한 사람이 여러 개의 단위작업을 수행할 수 있기 때문에, 특정인이 수행하는 작업만을 대상으로 하지 않습니다. <br/><span style="color: red;"><strong>사업장에서 보유한 모든 단위작업을 대상으로 합니다. 10개의 단위작업이 있다면, 10개 모두 부담작업여부를 확인해야 합니다.)</strong></span></p>
+
+            <div>
+                <label class="section-title">
+                    ▶ 해당 단위작업 관련 사진이나 영상 불러오기:
+                </label>
+                <!-- Simulation Preview Area - Now supports up to 3 files -->
+                <div class="file-upload-grid">
+                    <!-- File Upload Slot 1 -->
+                    <div id="file-upload-container-1" class="file-upload-box">
+                        <img id="image-preview-1" src="#" alt="Image Preview 1" class="hidden preview-media" onerror="this.onerror=null; this.src='https://placehold.co/200x100/f3f4f6/9ca3af?text=Image+Load+Error';">
+                        <video id="video-preview-1" controls class="hidden preview-media"></video>
+                        <input type="file" class="hidden" id="file-upload-1" aria-label="Upload image or video 1" accept="image/*,video/*"/>
+                        <label for="file-upload-1" class="file-upload-label">
+                            파일 선택 1
+                        </label>
+                        <span id="selected-file-name-1" class="selected-file-name"></span>
+                    </div>
+
+                    <!-- File Upload Slot 2 -->
+                    <div id="file-upload-container-2" class="file-upload-box hidden">
+                        <img id="image-preview-2" src="#" alt="Image Preview 2" class="hidden preview-media" onerror="this.onerror=null; this.src='https://placehold.co/200x100/f3f4f6/9ca3af?text=Image+Load+Error';">
+                        <video id="video-preview-2" controls class="hidden preview-media"></video>
+                        <input type="file" class="hidden" id="file-upload-2" aria-label="Upload image or video 2" accept="image/*,video/*"/>
+                        <label for="file-upload-2" class="file-upload-label">
+                            파일 선택 2
+                        </label>
+                        <span id="selected-file-name-2" class="selected-file-name"></span>
+                    </div>
+
+                    <!-- File Upload Slot 3 -->
+                    <div id="file-upload-container-3" class="file-upload-box hidden">
+                        <img id="image-preview-3" src="#" alt="Image Preview 3" class="hidden preview-media" onerror="this.onerror=null; this.src='https://placehold.co/200x100/f3f4f6/9ca3af?text=Image+Load+Error';">
+                        <video id="video-preview-3" controls class="hidden preview-media"></video>
+                        <input type="file" class="hidden" id="file-upload-3" aria-label="Upload image or video 3" accept="image/*,video/*"/>
+                        <label for="file-upload-3" class="file-upload-label">
+                            파일 선택 3
+                        </label>
+                        <span id="selected-file-name-3" class="selected-file-name"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="duration-label-group">
+                <label for="duration" class="section-title">
+                    ▶ 해당 단위작업은 하루를 기준으로 총 몇시간(분)을 수행합니까?
+                </label>
+                <div class="duration-input-group">
+                    <input
+                        type="number"
+                        id="hours"
+                        class="form-input duration-input text-center-input"
+                        min="0"
+                        max="23"
+                        placeholder="0"
+                    />
+                    <span class="text-gray-700">시간</span>
+                    <input
+                        type="number"
+                        id="minutes"
+                        class="form-input duration-input text-center-input"
+                        min="0"
+                        max="59"
+                        placeholder="0"
+                    />
+                    <span class="text-gray-700">분</span>
+                </div>                 
+            </div>                
+
+            <p class="checklist-prompt">
+                ▶ 첨부한 이미지나 영상을 보고 다음 질문에 해당하는 모든 항목에 <strong><span style="color:red;">중복체크</span></strong>해 주시기 바랍니다.</p>
+
+            <div id="checklistItems" class="checklist-item-space">
+                <!-- Checklist items will be dynamically inserted here by JavaScript -->
+            </div>
+
+            <div class="button-group">
+                <button
+                    type="submit"
+                    class="btn btn-blue"
+                >
+                    부담작업 여부 확인 및 저장
+                </button>
+                <button
+                    type="button"
+                    id="resetButton"
+                    class="btn btn-red print-hidden"
+                >
+                    초기화
+                </button>
+                <button
+                    type="button"
+                    id="printReportButton"
+                    class="btn btn-green print-hidden"
+                    disabled
+                >
+                    결과 보고서 인쇄
+                </button>
+            </div>
+        </form>
+
+        <div id="analysisResult" class="analysis-result-box hidden">
+            <h2 class="analysis-heading">근골격계부담작업 해당 여부 평가결과</h2>
+            <div class="analysis-content-area">
+                <p class="analysis-scaled-text"><span class="analysis-strong-text">■ 작업장/공정명/단위작업명:</span> <span id="analysisWorkplaceName"></span></p>
+                <p class="analysis-scaled-text">
+                    <span class="analysis-strong-text">■ 해당 작업 이미지 첨부:</span>
+                </p>
+                <div class="analysis-image-container">
+                    <img id="analysisImagePreview1" src="#" alt="Uploaded Image 1" class="analysis-image hidden">
+                    <img id="analysisImagePreview2" src="#" alt="Uploaded Image 2" class="analysis-image hidden">
+                    <img id="analysisImagePreview3" src="#" alt="Uploaded Image 3" class="analysis-image hidden">
+                </div>
+                <p class="analysis-scaled-text"><span class="analysis-strong-text">■ 총 작업수행 시간:</span> <span id="analysisHours"></span> 시간 <span id="analysisMinutes"></span> 분</p>
+                <p class="analysis-scaled-text"><span class="analysis-strong-text">■ 근골격계부담작업 해당여부 판단 결과:</span></p>
+                <ul id="analysisSelectedItems" class="analysis-list">
+                    <!-- Selected items will be dynamically inserted here -->
+                </ul>
+                <div id="finalMessageContainer" class="final-message-box hidden">
+                    <span style="color:blue; font-size:1.3rem">근골격계부담작업 해당 가능성이 있는 항목이 있다면,</span><br> 보다 정밀한 <span style="color:red;"><strong>시간분석</strong></span>을 통해 부담작업여부를 확정하시기 바랍니다.
+                    <p style="font-size:0.7rem">본 프로그램은 산업안전보건교육원 "근골격계부담작업 유해요인조사 작성실무" 교육용으로 배포합니다.</p>
+                </div>                
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log("Script started: Waiting for window.onload");
+
+        // Main checklist items
+        const checklistItems = [
+            { id: 'keyboard_mouse_input', text: '1. 컴퓨터를 사용하여 지속적으로 키보드(마우스) 입력 작업' },
+            { id: 'repetitive_upper_limb', text: '2. 상지부위(어깨, 윗팔, 아랫팔, 손목)의 같은 근육군을 반복하여 사용하는 작업' },
+            { id: 'shoulder_reaching', text: '3. 어깨를 뻗치는 작업' },
+            { id: 'neck_back_bending_twisting', text: '4. 목이나 허리를 구부리거나 비틀며 수행하는 작업' },
+            { id: 'knee_bending_squatting', text: '5. 무릎을 굽히거나 쪼그려 앉아서 수행하는 작업' },
+            { id: 'single_finger_picking', text: '6. 한 손의 손가락으로 부품 등을 집는 작업' },
+            { id: 'single_hand_tool_use', text: '7. 한 손으로 공구 등을 잡고 수행하는 작업' },
+            { id: 'lifting_over_25kg_8', text: '8. (25kg 이상) 물건 등을 양손으로 들거나 내리는 작업' },
+            { id: 'lifting_over_10kg_9', text: '9. (10kg 이상) 물건 등을 (부자연스럽게) 들거나 내리는 작업' },
+            { id: 'high_frequency_repetitive_lifting_10', text: '10. (고빈도 반복들기) 양손으로 물건 등을 들거나 내리는 작업' },
+            { id: 'hand_knee_tapping_11', text: '11. 손(손꿈치나 손바닥)이나 무릎으로 두드리는 작업' },
+        ];
+
+        // Sub-checklist items for item 1
+        const subChecklistItems1 = [
+            { id: 'keyboard_speed', text: '키보드의 경우, 분당 200회 이상의 속도로 입력' },
+            { id: 'mouse_cad_design', text: '마우스의 경우, CAD/설계/디자인과 같이 마우스 사용에 의존적임' },
+            { id: 'office_work', text: '검색, 자료 생성, 엑셀 등 오피스 업무, 기안 등의 사무 업무' },
+            { id: 'not_applicable_1', text: '해당사항 없음' }
+        ];
+
+        // Sub-checklist items for item 2
+        const subChecklistItems2 = [
+            { id: 'shoulder_lift_freq', text: '어깨를 분당 2.5회(시간당 150회) 들어올렸다 내렸다 하는 작업' },
+            { id: 'elbow_flex_ext_freq', text: '팔꿈치를 분당 10회(시간당 600회) 굽혔다 폈다 하는 작업' },
+            { id: 'wrist_flex_ext_freq', text: '손목을 분당 10회(시간당 600회) 굽혔다 폈다 하는 작업' },
+            { id: 'finger_flex_ext_freq', text: '손가락을 분당 200회(시간당 12,000회) 굽혔다 폈다 하는 작업' },
+            { id: 'not_applicable_2', text: '해당사항 없음' }
+        ];
+
+        // Sub-checklist items for item 3
+        const subChecklistItems3 = [
+            { id: 'arm_raise_45_deg', text: '팔을 몸통으로부터 앞(뒤)으로 45도 이상(어깨 위 포함) 드는 작업' },
+            { id: 'not_applicable_3', text: '해당사항 없음' }
+        ];
+
+        // Sub-checklist items for item 4 (radio group only)
+        const subChecklistItems4_radio = [
+            { id: 'neck_waist_bend_twist_20deg', text: '목이나 허리를 20도 이상 굽히거나 비틀며 작업' },
+            { id: 'not_applicable_4', text: '해당사항 없음' }
+        ];
+        // Individual checkbox for item 4-2
+        const checkboxItem4_2 = { id: 'body_head_support_work_checkbox', text: '몸통이나 머리를 지지하며 작업' };
+
+
+        // Sub-checklist items for item 6 (radio group only)
+        const subChecklistItems6_radio = [
+            { id: 'grip_1kg_plus', text: '1kg 이상이 부품을 집는 작업' },
+            { id: 'push_pull_2kg_equivalent', text: '2kg에 상응하는 힘으로 집거나 당기거나 미는 작업' },
+            { id: 'not_applicable_6', text: '해당사항 없음' }
+        ];
+        // Individual checkbox for item 6-3
+        const checkboxItem6_3 = { id: 'arm_hand_support_work_checkbox', text: '팔이나 손을 지지하며 작업' };
+
+        // Sub-checklist items for item 7 (radio group only)
+        const subChecklistItems7_radio = [
+            { id: 'tool_4_5kg_plus', text: '4.5kg 이상의 공구 등을 잡고 작업' },
+            { id: 'not_applicable_7', text: '해당사항 없음' }
+        ];
+        // Individual checkbox for item 7-2
+        const checkboxItem7_2 = { id: 'arm_hand_support_work_7_checkbox', text: '팔이나 손을 지지하며 작업' };
+
+        // New Sub-checklist items for new item 8
+        const subChecklistItems_8_over_25kg_lifting = [
+            { id: 'total_less_10_count_8', text: '총 10회 미만 들기작업' },
+            { id: 'total_more_10_count_8', text: '총 10회 이상 들기작업' }
+        ];
+
+        // New Sub-checklist items for new item 9
+        const subChecklistItems_9_over_10kg_lifting = [
+            { id: 'total_less_25_count_9', text: '총 25회 미만 들기작업' },
+            { id: 'total_more_25_count_9', text: '총 25회 이상 들기작업' }
+        ];
+
+        // Checkbox for "무릎~어깨높이에서 팔을 뻗지 않은 좋은 자세로 들기" for item 9
+        const good_posture_checkbox_9 = { id: 'good_posture_checkbox_9', text: '무릎~어깨높이에서 팔을 뻗지 않은 좋은 자세로 들기' };
+
+        // New Sub-checklist items for new item 10
+        const subChecklistItems_10_high_frequency = [
+            { id: 'lifting_less_4_5kg_high_frequency', text: '4.5kg 미만 들기작업' },
+            { id: 'lifting_more_4_5kg_high_frequency', text: '4.5kg 이상 들기작업' },
+        ];
+
+        // Nested sub-options for "4.5kg 이상 들기작업" under 10
+        const subSubChecklistItems_4_5kg_plus_high_frequency = [
+            { id: 'less_2_per_min_4_5kg_plus_high_frequency', text: '분당 2회 미만 들기작업' },
+            { id: 'more_2_per_min_4_5kg_plus_high_frequency', text: '분당 2회 이상 들기작업' }
+        ];
+
+        // Sub-checklist items for item 11 (previously item 9)
+        const subChecklistItems11 = [
+            { id: 'tapping_10_per_hour_11', text: '시간당 10회(분당 10회 포함) 이상 두드리는 작업' },
+            { id: 'not_applicable_11', text: '해당사항 없음' }
+        ];
+
+        // Global array to manage object URLs for each file input.
+        // This will now store data URLs for video frames or object URLs for images.
+        const currentObjectUrls = [null, null, null]; 
+
+        // Helper function to hide and clear a specific file upload slot
+        function hideAndClearFileUploadSlot(containerElement, index) {
+            if (!containerElement) return;
+
+            containerElement.classList.add('hidden'); // This line hides the container
+            const fileInput = document.getElementById(`file-upload-${index + 1}`);
+            const imagePreview = document.getElementById(`image-preview-${index + 1}`);
+            const videoPreview = document.getElementById(`video-preview-${index + 1}`);
+            const selectedFileNameSpan = document.getElementById(`selected-file-name-${index + 1}`);
+
+            // Revoke previous object URL if it exists and starts with 'blob:' (meaning it's a temp URL)
+            if (currentObjectUrls[index] && currentObjectUrls[index].startsWith('blob:')) {
+                URL.revokeObjectURL(currentObjectUrls[index]);
+            }
+            currentObjectUrls[index] = null; // Clear the stored URL or data URL
+
+            fileInput.value = ''; // Clear file input
+            imagePreview.classList.add('hidden');
+            imagePreview.src = '#';
+            videoPreview.classList.add('hidden');
+            videoPreview.src = '';
+            selectedFileNameSpan.textContent = '';
+        }
+
+        // Enhanced recursive helper function to hide and uncheck nested radios
+        function hideAndUncheckRecursively(element) {
+            if (!element) return;
+
+            // Hide the element itself
+            element.classList.add('hidden');
+
+            // Uncheck all radio buttons within this element
+            element.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.checked = false;
+            });
+            // Uncheck all checkboxes within this element
+            element.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+
+            // Recursively call for all child divs that might contain more radios or nested structures
+            element.querySelectorAll('div').forEach(childDiv => {
+                // Only recurse if the child div has an ID that implies it's a control group
+                // to avoid processing unnecessary divs and potential infinite loops if structure is complex.
+                if (childDiv.id && (childDiv.id.startsWith('subChecklist_') || childDiv.id.startsWith('subSubChecklist_') || childDiv.id.includes('good_posture_checkbox_9_container'))) {
+                    hideAndUncheckRecursively(childDiv);
+                }
+            });
+        }
+
+        // Function to reset all lifting-related sub-sub-options and containers
+        function resetAllLiftingOptions() {
+            // Hide and uncheck everything related to the new 8 item
+            const subChecklist8Div = document.getElementById('subChecklist_lifting_over_25kg_8');
+            if (subChecklist8Div) {
+                hideAndUncheckRecursively(subChecklist8Div);
+            }
+
+            // Hide and uncheck everything related to the new 9 item
+            const subChecklist9Div = document.getElementById('subChecklist_lifting_over_10kg_9');
+            if (subChecklist9Div) {
+                hideAndUncheckRecursively(subChecklist9Div);
+            }
+            // Also explicitly hide the good posture checkbox container for item 9
+            const goodPostureCheckboxContainer9 = document.getElementById('subSubChecklist_good_posture_checkbox_9');
+            if (goodPostureCheckboxContainer9) {
+                hideAndUncheckRecursively(goodPostureCheckboxContainer9);
+            }
+
+
+            // Hide and uncheck everything related to the new 10 item
+            const subChecklist10Div = document.getElementById('subChecklist_high_frequency_repetitive_lifting_10');
+            if (subChecklist10Div) {
+                hideAndUncheckRecursively(subChecklist10Div);
+            }
+        }
+
+
+        // Function to reset form fields, including media preview
+        function resetForm() {
+            document.getElementById('workplaceName').value = '';
+            document.getElementById('hours').value = '';
+            document.getElementById('minutes').value = '';
+            
+            // Clear custom validity for hours/minutes inputs
+            document.getElementById('hours').setCustomValidity('');
+            document.getElementById('minutes').setCustomValidity('');
+
+            // Reset all checkboxes
+            checklistItems.forEach(item => {
+                const checkbox = document.getElementById(item.id);
+                if (checkbox) checkbox.checked = false;
+            });
+            // Reset all radio buttons for sub-items of item 1
+            subChecklistItems1.forEach(subItem => {
+                const radioButton = document.getElementById(subItem.id);
+                if (radioButton) radioButton.checked = false;
+            });
+            // Reset all radio buttons for sub-items of item 2
+            subChecklistItems2.forEach(subItem => {
+                const radioButton = document.getElementById(subItem.id);
+                if (radioButton) radioButton.checked = false;
+            });
+            // Reset all radio buttons for sub-items of item 3
+            subChecklistItems3.forEach(subItem => {
+                const radioButton = document.getElementById(subItem.id);
+                if (radioButton) radioButton.checked = false;
+            });
+            // Reset all radio buttons for sub-items of item 4
+            subChecklistItems4_radio.forEach(subItem => {
+                const radioButton = document.getElementById(subItem.id);
+                if (radioButton) radioButton.checked = false;
+            });
+            // Reset individual checkbox for item 4-2
+            const checkbox4_2 = document.getElementById(checkboxItem4_2.id);
+            if (checkbox4_2) checkbox4_2.checked = false;
+
+            // Reset all radio buttons for sub-items of item 6
+            subChecklistItems6_radio.forEach(subItem => {
+                const radioButton = document.getElementById(subItem.id);
+                if (radioButton) radioButton.checked = false;
+            });
+            // Reset individual checkbox for item 6-3
+            const checkbox6_3 = document.getElementById(checkboxItem6_3.id);
+            if (checkbox6_3) checkbox6_3.checked = false;
+
+            // Reset all radio buttons for sub-items of item 7
+            subChecklistItems7_radio.forEach(subItem => {
+                const radioButton = document.getElementById(subItem.id);
+                if (radioButton) radioButton.checked = false;
+            });
+            // Reset individual checkbox for item 7-2
+            const checkbox7_2 = document.getElementById(checkboxItem7_2.id);
+            if (checkbox7_2) checkbox7_2.checked = false;
+
+            // Reset all lifting related options and their nested elements
+            resetAllLiftingOptions();
+
+            // Reset all radio buttons for sub-items of item 11
+            subChecklistItems11.forEach(subItem => {
+                const radioButton = document.getElementById(subItem.id);
+                if (radioButton) radioButton.checked = false;
+            });
+
+            // Hide sub-checklists if visible using the recursive helper
+            const subChecklistKeyboardMouseDiv = document.getElementById('subChecklist_keyboard_mouse_input');
+            if (subChecklistKeyboardMouseDiv) {
+                hideAndUncheckRecursively(subChecklistKeyboardMouseDiv);
+            }
+            const subChecklistRepetitiveUpperLimbDiv = document.getElementById('subChecklist_repetitive_upper_limb');
+            if (subChecklistRepetitiveUpperLimbDiv) {
+                hideAndUncheckRecursively(subChecklistRepetitiveUpperLimbDiv);
+            }
+            const subChecklistShoulderReachingDiv = document.getElementById('subChecklist_shoulder_reaching');
+            if (subChecklistShoulderReachingDiv) {
+                hideAndUncheckRecursively(subChecklistShoulderReachingDiv);
+            }
+            const subChecklistNeckBackBendingTwistingDiv = document.getElementById('subChecklist_neck_back_bending_twisting');
+            if (subChecklistNeckBackBendingTwistingDiv) {
+                hideAndUncheckRecursively(subChecklistNeckBackBendingTwistingDiv);
+            }
+            const subChecklistSingleFingerPickingDiv = document.getElementById('subChecklist_single_finger_picking');
+            if (subChecklistSingleFingerPickingDiv) {
+                hideAndUncheckRecursively(subChecklistSingleFingerPickingDiv);
+            }
+            const subChecklistSingleHandToolUseDiv = document.getElementById('subChecklist_single_hand_tool_use');
+            if (subChecklistSingleHandToolUseDiv) {
+                hideAndUncheckRecursively(subChecklistSingleHandToolUseDiv);
+            }
+            // For 11, the main sub-checklist should also be hidden and reset
+            const subChecklistHandKneeTappingDiv = document.getElementById('subChecklist_hand_knee_tapping_11');
+            if (subChecklistHandKneeTappingDiv) {
+                hideAndUncheckRecursively(subChecklistHandKneeTappingDiv);
+            }
+
+            // Media preview reset for all slots
+            for (let i = 0; i < 3; i++) {
+                const container = document.getElementById(`file-upload-container-${i + 1}`);
+                hideAndClearFileUploadSlot(container, i);
+            }
+            // Ensure the first file upload slot is visible after reset
+            document.getElementById('file-upload-container-1')?.classList.remove('hidden');
+            // Ensure slot 2 and 3 remain hidden after reset
+            document.getElementById('file-upload-container-2')?.classList.add('hidden');
+            document.getElementById('file-upload-container-3')?.classList.add('hidden');
+
+            // Hide analysis result and burden work 1 specific message
+            document.getElementById('analysisResult').classList.add('hidden');
+            // Hide the final message
+            document.getElementById('finalMessageContainer')?.classList.add('hidden');
+            // Disable print button
+            document.getElementById('printReportButton').disabled = true;
+
+            // Hide and reset all analysis image previews
+            for (let i = 1; i <= 3; i++) {
+                const analysisImagePreview = document.getElementById(`analysisImagePreview${i}`);
+                if (analysisImagePreview) {
+                    analysisImagePreview.src = '#';
+                    analysisImagePreview.classList.add('hidden');
+                }
+            }
+        }
+
+        // New function to capture current frame of a video element
+        function captureVideoFrame(videoElement, index) {
+            if (!videoElement || videoElement.classList.contains('hidden') || !videoElement.src) {
+                return; // No video or hidden
+            }
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas dimensions to video dimensions
+            canvas.width = videoElement.videoWidth;
+            canvas.height = videoElement.videoHeight;
+            
+            // Draw the current video frame onto the canvas
+            ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+            
+            // Get the data URL of the captured image
+            const imageDataUrl = canvas.toDataURL('image/png');
+            currentObjectUrls[index] = imageDataUrl; // Update the stored URL for this slot
+        }
+
+        // Function to handle file input changes for all slots
+        function handleFileChange(event, index) {
+            // Revoke previous object URL for this specific index if it was a temporary blob URL
+            if (currentObjectUrls[index] && currentObjectUrls[index].startsWith('blob:')) {
+                URL.revokeObjectURL(currentObjectUrls[index]);
+            }
+            currentObjectUrls[index] = null; // Clear previous state
+
+            const file = event.target.files[0];
+            const imagePreview = document.getElementById(`image-preview-${index + 1}`);
+            const videoPreview = document.getElementById(`video-preview-${index + 1}`);
+            const selectedFileNameSpan = document.getElementById(`selected-file-name-${index + 1}`);
+            const nextFileUploadContainer = document.getElementById(`file-upload-container-${index + 2}`);
+
+            // Reset current preview elements in the form
+            imagePreview.classList.add('hidden');
+            imagePreview.src = '#';
+            videoPreview.classList.add('hidden');
+            videoPreview.src = '';
+            selectedFileNameSpan.textContent = '';
+
+            if (file) {
+                selectedFileNameSpan.textContent = `선택된 파일: ${file.name}`;
+                const fileObjectURL = URL.createObjectURL(file); // Create object URL for local preview
+
+                if (file.type.startsWith('image/')) {
+                    imagePreview.src = fileObjectURL;
+                    imagePreview.classList.remove('hidden');
+                    currentObjectUrls[index] = fileObjectURL; // Store object URL for image to display in analysis result
+                } else if (file.type.startsWith('video/')) {
+                    videoPreview.src = fileObjectURL;
+                    videoPreview.classList.remove('hidden');
+                    // Ensure the video is loaded and paused immediately
+                    videoPreview.preload = "auto"; // Suggest browser to load the whole file
+                    videoPreview.autoplay = false; // Ensure no autoplay
+                    
+                    // Listen for 'loadedmetadata' to ensure video dimensions are available before pausing
+                    videoPreview.addEventListener('loadedmetadata', function onVideoMetadataLoaded() {
+                        videoPreview.pause(); // Pause immediately after metadata is loaded
+                        // Remove the event listener to avoid multiple calls if video is played/reloaded
+                        videoPreview.removeEventListener('loadedmetadata', onVideoMetadataLoaded);
+                    }, { once: true });
+
+                    videoPreview.load(); // Explicitly load the video content
+                    currentObjectUrls[index] = fileObjectURL; // Store object URL initially, replaced by data URL on submit
+                } else {
+                    // Unsupported file type
+                    event.target.value = ''; // Clear input value
+                    URL.revokeObjectURL(fileObjectURL); // Revoke the temporary object URL
+                    selectedFileNameSpan.textContent = '지원하지 않는 파일 형식';
+                    return; // Exit as file is not valid
+                }
+
+                // If a file is selected for this slot, reveal the next slot if it exists and is hidden
+                if (nextFileUploadContainer && nextFileUploadContainer.classList.contains('hidden')) {
+                    nextFileUploadContainer.classList.remove('hidden');
+                }
+            } else {
+                // If no file is selected (e.g., user opened dialog and cancelled)
+                // If this slot was previously occupied and now cleared, hide subsequent slots and clear their content
+                for (let i = index + 1; i < 3; i++) {
+                    const containerToHide = document.getElementById(`file-upload-container-${i + 1}`);
+                    if (containerToHide) {
+                        hideAndClearFileUploadSlot(containerToHide, i);
+                    }
+                }
+            }
+        }
+
+
+        // Initialize script on window load
+        window.onload = async function() {
+            console.log("Script started: Waiting for window.onload");
+
+            // Populate checklist items
+            const checklistItemsDiv = document.getElementById('checklistItems');
+            if (!checklistItemsDiv) {
+                console.error("Could not find element with ID 'checklistItems'.");
+                return; // Exit if the container is not found
+            }
+            console.log("checklistItemsDiv found:", checklistItemsDiv);
+
+            checklistItems.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'checklist-item-row';
+
+                let innerHtml = `
+                    <div class="main-checkbox-wrapper">
+                        <input
+                            type="checkbox"
+                            id="${item.id}"
+                            class="main-checkbox"
+                        />
+                        <label for="${item.id}" class="main-label">
+                            ${item.text}
+                        </label>
+                    </div>
+                `;
+
+                // Add sub-checklist items for item 1
+                if (item.id === 'keyboard_mouse_input') {
+                    innerHtml += `
+                        <div id="subChecklist_${item.id}" class="sub-checklist-wrapper sub-checklist-space hidden">
+                            ${subChecklistItems1.map(subItem => `
+                                <div class="sub-item-row">
+                                    <input
+                                        type="radio"
+                                        id="${subItem.id}"
+                                        name="keyboard_mouse_sub_options"
+                                        class="sub-radio"
+                                    />
+                                    <label for="${subItem.id}" class="sub-label">
+                                        ${subItem.text}
+                                    </label>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                // Add sub-checklist items for item 2
+                if (item.id === 'repetitive_upper_limb') {
+                    innerHtml += `
+                        <div id="subChecklist_${item.id}" class="sub-checklist-wrapper sub-checklist-space hidden">
+                            ${subChecklistItems2.map(subItem => `
+                                <div class="sub-item-row">
+                                    <input
+                                        type="radio"
+                                        id="${subItem.id}"
+                                        name="repetitive_upper_limb_sub_options"
+                                        class="sub-radio"
+                                    />
+                                    <label for="${subItem.id}" class="sub-label">
+                                        ${subItem.text}
+                                    </label>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                // Add sub-checklist items for item 3
+                if (item.id === 'shoulder_reaching') {
+                    innerHtml += `
+                        <div id="subChecklist_${item.id}" class="sub-checklist-wrapper sub-checklist-space hidden">
+                            ${subChecklistItems3.map(subItem => `
+                                <div class="sub-item-row">
+                                    <input
+                                        type="radio"
+                                        id="${subItem.id}"
+                                        name="shoulder_reaching_sub_options"
+                                        class="sub-radio"
+                                    />
+                                    <label for="${subItem.id}" class="sub-label">
+                                        ${subItem.text}
+                                    </label>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                // Add sub-checklist items for item 4
+                if (item.id === 'neck_back_bending_twisting') {
+                    innerHtml += `
+                        <div id="subChecklist_${item.id}" class="sub-checklist-wrapper sub-checklist-space hidden">
+                            ${subChecklistItems4_radio.map(subItem => `
+                                <div class="sub-item-row">
+                                    <input
+                                        type="radio"
+                                        id="${subItem.id}"
+                                        name="neck_back_bending_twisting_sub_options"
+                                        class="sub-radio"
+                                    />
+                                    <label for="${subItem.id}" class="sub-label">
+                                        ${subItem.text}
+                                    </label>
+                                </div>
+                                ${subItem.id === 'neck_waist_bend_twist_20deg' ? `
+                                    <div id="subSubChecklist_${checkboxItem4_2.id}" class="nested-sub-checklist sub-checklist-space hidden">
+                                        <div class="sub-item-row" style="margin-left: 1.25rem;">
+                                            <input
+                                                type="checkbox"
+                                                id="${checkboxItem4_2.id}"
+                                                class="sub-checkbox"
+                                            />
+                                            <label for="${checkboxItem4_2.id}" class="sub-label red-bold-text">
+                                                <span>${checkboxItem4_2.text}</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                 // Add sub-checklist items for item 6
+                if (item.id === 'single_finger_picking') {
+                    innerHtml += `
+                        <div id="subChecklist_${item.id}" class="sub-checklist-wrapper sub-checklist-space hidden">
+                            <div class="grouping-box sub-checklist-space">
+                                ${subChecklistItems6_radio.filter(subItem => subItem.id !== 'not_applicable_6').map(subItem => `
+                                    <div class="sub-item-row">
+                                        <input
+                                            type="radio"
+                                            id="${subItem.id}"
+                                            name="single_finger_picking_sub_options"
+                                            class="sub-radio"
+                                        />
+                                        <label for="${subItem.id}" class="sub-label">
+                                            ${subItem.text}
+                                        </label>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div id="subSubChecklist_${checkboxItem6_3.id}" class="nested-sub-checklist sub-checklist-space hidden">
+                                <div class="sub-item-row" style="margin-left: 1.25rem;">
+                                    <input
+                                        type="checkbox"
+                                        id="${checkboxItem6_3.id}"
+                                        class="sub-checkbox"
+                                    />
+                                    <label for="${checkboxItem6_3.id}" class="sub-label red-bold-text">
+                                        <span>${checkboxItem6_3.text}</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <!-- 6-4. 해당사항 없음 (radio) -->
+                            ${subChecklistItems6_radio.filter(subItem => subItem.id === 'not_applicable_6').map(subItem => `
+                                <div class="sub-item-row">
+                                    <input
+                                        type="radio"
+                                        id="${subItem.id}"
+                                        name="single_finger_picking_sub_options"
+                                        class="sub-radio"
+                                    />
+                                    <label for="${subItem.id}" class="sub-label">
+                                        ${subItem.text}
+                                    </label>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                 // Add sub-checklist items for item 7 (newly added)
+                if (item.id === 'single_hand_tool_use') {
+                    innerHtml += `
+                        <div id="subChecklist_${item.id}" class="sub-checklist-wrapper sub-checklist-space hidden">
+                            ${subChecklistItems7_radio.map(subItem => `
+                                <div class="sub-item-row">
+                                    <input
+                                        type="radio"
+                                        id="${subItem.id}"
+                                        name="single_hand_tool_use_sub_options"
+                                        class="sub-radio"
+                                    />
+                                    <label for="${subItem.id}" class="sub-label">
+                                        ${subItem.text}
+                                    </label>
+                                </div>
+                                ${subItem.id === 'tool_4_5kg_plus' ? `
+                                    <div id="subSubChecklist_${checkboxItem7_2.id}" class="nested-sub-checklist sub-checklist-space hidden">
+                                        <div class="sub-item-row" style="margin-left: 1.25rem;">
+                                            <input
+                                                type="checkbox"
+                                                id="${checkboxItem7_2.id}"
+                                                class="sub-checkbox"
+                                            />
+                                            <label for="${checkboxItem7_2.id}" class="sub-label red-bold-text">
+                                                <span>${checkboxItem7_2.text}</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                // Add sub-checklist for new item 8
+                if (item.id === 'lifting_over_25kg_8') {
+                    innerHtml += `
+                        <div id="subChecklist_${item.id}" class="sub-checklist-wrapper sub-checklist-space hidden">
+                            ${subChecklistItems_8_over_25kg_lifting.map(subItem => `
+                                <div class="sub-item-row">
+                                    <input
+                                        type="radio"
+                                        id="${subItem.id}"
+                                        name="lifting_8_options"
+                                        class="sub-radio"
+                                    />
+                                    <label for="${subItem.id}" class="sub-label">
+                                        ${subItem.text}
+                                    </label>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                // Add sub-checklist for new item 9
+                if (item.id === 'lifting_over_10kg_9') {
+                    innerHtml += `
+                        <div id="subChecklist_${item.id}" class="sub-checklist-wrapper sub-checklist-space hidden">
+                            ${subChecklistItems_9_over_10kg_lifting.map(subItem => `
+                                <div class="sub-item-row">
+                                    <input
+                                        type="radio"
+                                        id="${subItem.id}"
+                                        name="lifting_9_options"
+                                        class="sub-radio"
+                                    />
+                                    <label for="${subItem.id}" class="sub-label">
+                                        ${subItem.text}
+                                    </label>
+                                </div>
+                                ${subItem.id === 'total_more_25_count_9' ? `
+                                    <div id="subSubChecklist_${good_posture_checkbox_9.id}" class="nested-sub-checklist sub-checklist-space hidden">
+                                        <div class="sub-item-row" style="margin-left: 1.25rem;">
+                                            <input
+                                                type="checkbox"
+                                                id="${good_posture_checkbox_9.id}"
+                                                class="sub-checkbox"
+                                            />
+                                            <label for="${good_posture_checkbox_9.id}" class="sub-label red-bold-text">
+                                                <span>${good_posture_checkbox_9.text}</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                // Add sub-checklist for new item 10 (high frequency repetitive lifting)
+                if (item.id === 'high_frequency_repetitive_lifting_10') {
+                    innerHtml += `
+                        <div id="subChecklist_${item.id}" class="sub-checklist-wrapper sub-checklist-space hidden">
+                            ${subChecklistItems_10_high_frequency.map(subItem => `
+                                <div class="sub-item-row">
+                                    <input
+                                        type="radio"
+                                        id="${subItem.id}"
+                                        name="lifting_10_high_frequency_options"
+                                        class="sub-radio"
+                                    />
+                                    <label for="${subItem.id}" class="sub-label">
+                                        ${subItem.text}
+                                    </label>
+                                </div>
+                                <!-- Nested options for 4.5kg 이상 들기작업 -->
+                                ${subItem.id === 'lifting_more_4_5kg_high_frequency' ? `
+                                    <div id="subSubChecklist_${subItem.id}" class="nested-sub-checklist sub-checklist-space hidden">
+                                        <div class="grouping-box sub-checklist-space">
+                                            ${subSubChecklistItems_4_5kg_plus_high_frequency.map(subSubItem => `
+                                                <div class="sub-item-row">
+                                                    <input
+                                                        type="radio"
+                                                        id="${subSubItem.id}"
+                                                        name="${subItem.id}_nested_options"
+                                                        class="sub-radio nested-radio-pink"
+                                                    />
+                                                    <label for="${subSubItem.id}" class="sub-label">
+                                                        ${subSubItem.text}
+                                                    </label>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                // Add sub-checklist items for item 11
+                if (item.id === 'hand_knee_tapping_11') {
+                    innerHtml += `
+                        <div id="subChecklist_${item.id}" class="sub-checklist-wrapper sub-checklist-space hidden">
+                            ${subChecklistItems11.map(subItem => `
+                                <div class="sub-item-row">
+                                    <input
+                                        type="radio"
+                                        id="${subItem.id}"
+                                        name="hand_knee_tapping_11_sub_options"
+                                        class="sub-radio"
+                                    />
+                                    <label for="${subItem.id}" class="sub-label">
+                                        ${subItem.text}
+                                    </label>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                div.innerHTML = innerHtml;
+                checklistItemsDiv.appendChild(div);
+                console.log(`Item added: ${item.id}`);
+            });
+
+            // Attach event listeners for each file input
+            for (let i = 0; i < 3; i++) {
+                const fileInput = document.getElementById(`file-upload-${i + 1}`);
+                if (fileInput) {
+                    fileInput.addEventListener('change', (event) => handleFileChange(event, i));
+                }
+            }
+
+            // Add event listener for main checkbox 1 to show/hide sub-items
+            const keyboardMouseInputCheckbox = document.getElementById('keyboard_mouse_input');
+            const subChecklistKeyboardMouseDiv = document.getElementById('subChecklist_keyboard_mouse_input');
+
+            if (keyboardMouseInputCheckbox && subChecklistKeyboardMouseDiv) {
+                keyboardMouseInputCheckbox.addEventListener('change', () => {
+                    if (keyboardMouseInputCheckbox.checked) {
+                        subChecklistKeyboardMouseDiv.classList.remove('hidden');
+                    } else {
+                        hideAndUncheckRecursively(subChecklistKeyboardMouseDiv);
+                    }
+                });
+            }
+
+            // Add event listener for main checkbox 2 to show/hide sub-items
+            const repetitiveUpperLimbCheckbox = document.getElementById('repetitive_upper_limb');
+            const subChecklistRepetitiveUpperLimbDiv = document.getElementById('subChecklist_repetitive_upper_limb');
+
+            if (repetitiveUpperLimbCheckbox && subChecklistRepetitiveUpperLimbDiv) {
+                repetitiveUpperLimbCheckbox.addEventListener('change', () => {
+                    if (repetitiveUpperLimbCheckbox.checked) {
+                        subChecklistRepetitiveUpperLimbDiv.classList.remove('hidden');
+                    } else {
+                        hideAndUncheckRecursively(subChecklistRepetitiveUpperLimbDiv);
+                    }
+                });
+            }
+
+            // Add event listener for main checkbox 3 to show/hide sub-items
+            const shoulderReachingCheckbox = document.getElementById('shoulder_reaching');
+            const subChecklistShoulderReachingDiv = document.getElementById('subChecklist_shoulder_reaching');
+
+            if (shoulderReachingCheckbox && subChecklistShoulderReachingDiv) {
+                shoulderReachingCheckbox.addEventListener('change', () => {
+                    if (shoulderReachingCheckbox.checked) {
+                        subChecklistShoulderReachingDiv.classList.remove('hidden');
+                    } else {
+                        hideAndUncheckRecursively(subChecklistShoulderReachingDiv);
+                    }
+                });
+            }
+
+            // Add event listener for main checkbox 4 to show/hide sub-items and control dependent checkbox
+            const neckBackBendingTwistingCheckbox = document.getElementById('neck_back_bending_twisting');
+            const subChecklistNeckBackBendingTwistingDiv = document.getElementById('subChecklist_neck_back_bending_twisting');
+            const neckWaistBendTwist20degRadio = document.getElementById('neck_waist_bend_twist_20deg');
+            const bodyHeadSupportWorkCheckboxContainer = document.getElementById('subSubChecklist_body_head_support_work_checkbox');
+
+            if (neckBackBendingTwistingCheckbox && subChecklistNeckBackBendingTwistingDiv) {
+                neckBackBendingTwistingCheckbox.addEventListener('change', () => {
+                    if (neckBackBendingTwistingCheckbox.checked) {
+                        subChecklistNeckBackBendingTwistingDiv.classList.remove('hidden');
+                    } else {
+                        hideAndUncheckRecursively(subChecklistNeckBackBendingTwistingDiv);
+                        // Ensure the dependent checkbox and its container are hidden/unchecked
+                        if (bodyHeadSupportWorkCheckboxContainer) {
+                            hideAndUncheckRecursively(bodyHeadSupportWorkCheckboxContainer);
+                        }
+                    }
+                });
+            }
+            // Listener for conditional checkbox 4-2
+            if (neckWaistBendTwist20degRadio && bodyHeadSupportWorkCheckboxContainer) {
+                const neckBackRadios = document.querySelectorAll('input[name="neck_back_bending_twisting_sub_options"]');
+                neckBackRadios.forEach(radio => {
+                    radio.addEventListener('change', () => {
+                        if (neckWaistBendTwist20degRadio.checked) {
+                            bodyHeadSupportWorkCheckboxContainer.classList.remove('hidden');
+                        } else {
+                            hideAndUncheckRecursively(bodyHeadSupportWorkCheckboxContainer);
+                        }
+                    });
+                });
+            }
+
+
+            // Add event listener for main checkbox 6 to show/hide sub-items and control dependent checkbox
+            const singleFingerPickingCheckbox = document.getElementById('single_finger_picking');
+            const subChecklistSingleFingerPickingDiv = document.getElementById('subChecklist_single_finger_picking');
+            const grip1kgPlusRadio = document.getElementById('grip_1kg_plus');
+            const pushPull2kgEquivalentRadio = document.getElementById('push_pull_2kg_equivalent');
+            const armHandSupportWorkCheckboxContainer6 = document.getElementById('subSubChecklist_arm_hand_support_work_checkbox');
+
+
+            if (singleFingerPickingCheckbox && subChecklistSingleFingerPickingDiv) {
+                singleFingerPickingCheckbox.addEventListener('change', () => {
+                    if (singleFingerPickingCheckbox.checked) {
+                        subChecklistSingleFingerPickingDiv.classList.remove('hidden');
+                    } else {
+                        hideAndUncheckRecursively(subChecklistSingleFingerPickingDiv);
+                        // Ensure the dependent checkbox and its container are hidden/unchecked
+                        if (armHandSupportWorkCheckboxContainer6) {
+                            hideAndUncheckRecursively(armHandSupportWorkCheckboxContainer6);
+                        }
+                    }
+                });
+            }
+            // Listener for conditional checkbox 6-3
+            if (grip1kgPlusRadio && pushPull2kgEquivalentRadio && armHandSupportWorkCheckboxContainer6) {
+                const fingerPickingRadios = document.querySelectorAll('input[name="single_finger_picking_sub_options"]');
+                fingerPickingRadios.forEach(radio => {
+                    radio.addEventListener('change', () => {
+                        if (grip1kgPlusRadio.checked || pushPull2kgEquivalentRadio.checked) {
+                            armHandSupportWorkCheckboxContainer6.classList.remove('hidden');
+                        } else {
+                            hideAndUncheckRecursively(armHandSupportWorkCheckboxContainer6);
+                        }
+                    });
+                });
+            }
+
+
+            // Add event listener for main checkbox 7 to show/hide sub-items and control dependent checkbox
+            const singleHandToolUseCheckbox = document.getElementById('single_hand_tool_use');
+            const subChecklistSingleHandToolUseDiv = document.getElementById('subChecklist_single_hand_tool_use');
+            const tool4_5kgPlusRadio = document.getElementById('tool_4_5kg_plus');
+            const armHandSupportWorkCheckboxContainer7 = document.getElementById('subSubChecklist_arm_hand_support_work_7_checkbox');
+
+            if (singleHandToolUseCheckbox && subChecklistSingleHandToolUseDiv) {
+                singleHandToolUseCheckbox.addEventListener('change', () => {
+                    if (singleHandToolUseCheckbox.checked) {
+                        subChecklistSingleHandToolUseDiv.classList.remove('hidden');
+                    } else {
+                        hideAndUncheckRecursively(subChecklistSingleHandToolUseDiv);
+                        // Ensure the dependent checkbox and its container are hidden/unchecked
+                        if (armHandSupportWorkCheckboxContainer7) {
+                            hideAndUncheckRecursively(armHandSupportWorkCheckboxContainer7);
+                        }
+                    }
+                });
+            }
+            // Listener for conditional checkbox 7-2
+            if (tool4_5kgPlusRadio && armHandSupportWorkCheckboxContainer7) {
+                const toolUseRadios = document.querySelectorAll('input[name="single_hand_tool_use_sub_options"]');
+                toolUseRadios.forEach(radio => {
+                    radio.addEventListener('change', () => {
+                        if (tool4_5kgPlusRadio.checked) {
+                            armHandSupportWorkCheckboxContainer7.classList.remove('hidden');
+                        } else {
+                            hideAndUncheckRecursively(armHandSupportWorkCheckboxContainer7);
+                        }
+                    });
+                });
+            }
+
+            // --- Event Listeners for New Item 8 (25kg+ Lifting) ---
+            const liftingOver25kg8Checkbox = document.getElementById('lifting_over_25kg_8');
+            const subChecklistLiftingOver25kg8Div = document.getElementById('subChecklist_lifting_over_25kg_8');
+
+            if (liftingOver25kg8Checkbox && subChecklistLiftingOver25kg8Div) {
+                liftingOver25kg8Checkbox.addEventListener('change', () => {
+                    if (liftingOver25kg8Checkbox.checked) {
+                        subChecklistLiftingOver25kg8Div.classList.remove('hidden');
+                    } else {
+                        hideAndUncheckRecursively(subChecklistLiftingOver25kg8Div);
+                    }
+                });
+            }
+
+            // --- Event Listeners for New Item 9 (10kg+ Lifting with awkward posture) ---
+            const liftingOver10kg9Checkbox = document.getElementById('lifting_over_10kg_9');
+            const subChecklistLiftingOver10kg9Div = document.getElementById('subChecklist_lifting_over_10kg_9');
+            const totalMore25Count9Radio = document.getElementById('total_more_25_count_9');
+            const goodPostureCheckbox9Container = document.getElementById('subSubChecklist_good_posture_checkbox_9');
+
+            if (liftingOver10kg9Checkbox && subChecklistLiftingOver10kg9Div) {
+                liftingOver10kg9Checkbox.addEventListener('change', () => {
+                    if (liftingOver10kg9Checkbox.checked) {
+                        subChecklistLiftingOver10kg9Div.classList.remove('hidden');
+                    } else {
+                        hideAndUncheckRecursively(subChecklistLiftingOver10kg9Div);
+                        // Ensure the dependent checkbox and its container are hidden/unchecked
+                        if (goodPostureCheckbox9Container) {
+                            hideAndUncheckRecursively(goodPostureCheckbox9Container);
+                        }
+                    }
+                });
+            }
+
+            // Listener for conditional checkbox under item 9
+            if (totalMore25Count9Radio && goodPostureCheckbox9Container) {
+                const lifting9Options = document.querySelectorAll('input[name="lifting_9_options"]');
+                lifting9Options.forEach(radio => {
+                    radio.addEventListener('change', () => {
+                        if (totalMore25Count9Radio.checked) {
+                            goodPostureCheckbox9Container.classList.remove('hidden');
+                        } else {
+                            hideAndUncheckRecursively(goodPostureCheckbox9Container);
+                        }
+                    });
+                });
+            }
+
+
+            // --- Event Listeners for New Item 10 (High Frequency Repetitive Lifting) ---
+            const highFrequencyRepetitiveLifting10Checkbox = document.getElementById('high_frequency_repetitive_lifting_10');
+            const subChecklistHighFrequencyRepetitiveLifting10Div = document.getElementById('subChecklist_high_frequency_repetitive_lifting_10');
+
+            if (highFrequencyRepetitiveLifting10Checkbox && subChecklistHighFrequencyRepetitiveLifting10Div) {
+                highFrequencyRepetitiveLifting10Checkbox.addEventListener('change', () => {
+                    if (highFrequencyRepetitiveLifting10Checkbox.checked) {
+                        subChecklistHighFrequencyRepetitiveLifting10Div.classList.remove('hidden');
+                    } else {
+                        hideAndUncheckRecursively(subChecklistHighFrequencyRepetitiveLifting10Div);
+                    }
+                });
+            }
+
+            // Listener for sub-option of 10 (lifting_more_4_5kg_high_frequency)
+            const liftingMore4_5kgHighFrequencyRadio = document.getElementById('lifting_more_4_5kg_high_frequency');
+            const subSubChecklistLiftingMore4_5kgHighFrequencyDiv = document.getElementById('subSubChecklist_lifting_more_4_5kg_high_frequency');
+            const all10_main_radios = document.querySelectorAll('input[name="lifting_10_high_frequency_options"]');
+
+            all10_main_radios.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    // Hide nested sub-sub-checklist initially
+                    hideAndUncheckRecursively(subSubChecklistLiftingMore4_5kgHighFrequencyDiv);
+
+                    if (liftingMore4_5kgHighFrequencyRadio && liftingMore4_5kgHighFrequencyRadio.checked) {
+                        subSubChecklistLiftingMore4_5kgHighFrequencyDiv?.classList.remove('hidden');
+                    }
+                });
+            });
+            // End of New Item 8, 9 and 10 event listeners
+
+
+            // Add event listener for main checkbox 11 to show/hide sub-items
+            const handKneeTapping11Checkbox = document.getElementById('hand_knee_tapping_11');
+            const subChecklistHandKneeTapping11Div = document.getElementById('subChecklist_hand_knee_tapping_11');
+
+            if (handKneeTapping11Checkbox && subChecklistHandKneeTapping11Div) {
+                handKneeTapping11Checkbox.addEventListener('change', () => {
+                    if (handKneeTapping11Checkbox.checked) {
+                        subChecklistHandKneeTapping11Div.classList.remove('hidden');
+                    } else {
+                        hideAndUncheckRecursively(subChecklistHandKneeTapping11Div);
+                    }
+                });
+            }
+
+            // Get hours and minutes input elements
+            const hoursInput = document.getElementById('hours');
+            const minutesInput = document.getElementById('minutes');
+            const printReportButton = document.getElementById('printReportButton');
+            // Get all analysis image preview elements
+            const analysisImagePreviews = [
+                document.getElementById('analysisImagePreview1'),
+                document.getElementById('analysisImagePreview2'),
+                document.getElementById('analysisImagePreview3')
+            ];
+
+
+            // Add input event listeners to clear custom validity as user types
+            if (hoursInput) {
+                hoursInput.addEventListener('input', () => {
+                    hoursInput.setCustomValidity('');
+                    minutesInput.setCustomValidity(''); // Clear minutes validity too for consistency
+                });
+            }
+            if (minutesInput) {
+                minutesInput.addEventListener('input', () => {
+                    minutesInput.setCustomValidity('');
+                    hoursInput.setCustomValidity(''); // Clear hours validity too for consistency
+                });
+            }
+
+            // Handle form submission to display analysis results
+            document.getElementById('assessmentForm').addEventListener('submit', async (event) => {
+                event.preventDefault(); // Prevent default form submission
+
+                const workplaceName = document.getElementById('workplaceName').value;
+                
+
+                // Manual validation for workplaceName
+                if (workplaceName.trim() === '') {
+                    document.getElementById('workplaceName').setCustomValidity('작업장/공정명/단위작업명을 입력해 주세요.');
+                    document.getElementById('workplaceName').reportValidity();
+                    return;
+                } else {
+                    document.getElementById('workplaceName').setCustomValidity('');
+                }
+
+                // Custom validation for time input: only if BOTH hours and minutes are empty
+                const hours = parseInt(hoursInput.value) || 0;
+                const minutes = parseInt(minutesInput.value) || 0;
+                const totalDailyMinutes = (hours * 60) + minutes;
+
+                if (totalDailyMinutes === 0) {
+                    hoursInput.setCustomValidity('작업 시간을 0시간 0분 이상으로 입력해 주세요.');
+                    hoursInput.reportValidity();
+                    return;
+                } else {
+                    hoursInput.setCustomValidity('');
+                    minutesInput.setCustomValidity(''); 
+                }
+
+                // Iterate through all video preview elements and capture their current frames before displaying results
+                for (let i = 0; i < 3; i++) {
+                    const videoPreview = document.getElementById(`video-preview-${i + 1}`);
+                    if (videoPreview) {
+                        captureVideoFrame(videoPreview, i);
+                    }
+                }
+
+                // Display uploaded images in the analysis result
+                analysisImagePreviews.forEach((imgElement, index) => {
+                    if (currentObjectUrls[index]) {
+                        imgElement.src = currentObjectUrls[index]; // Use the stored image data URL or object URL
+                        imgElement.classList.remove('hidden');
+                    } else {
+                        imgElement.classList.add('hidden');
+                        imgElement.src = '#';
+                    }
+                });
+
+
+                // Display workplace name and total time
+                document.getElementById('analysisWorkplaceName').textContent = workplaceName;
+                document.getElementById('analysisHours').textContent = hours;
+                document.getElementById('analysisMinutes').textContent = minutes;
+
+                // Clear previous results
+                const selectedItemsList = document.getElementById('analysisSelectedItems');
+                selectedItemsList.innerHTML = '';
+
+                // Initialize specific burden messages
+                let burdenWork1SpecificMessage = '';
+                let burdenWork2SpecificMessage = '';
+                let burdenWork3SpecificMessage = '';
+                let burdenWork4SpecificMessage = '';
+                let burdenWork5SpecificMessage = '';
+                let burdenWork6SpecificMessage = '';
+                let burdenWork7SpecificMessage = '';
+                let burdenWork8SpecificMessage = '';
+                let burdenWork9SpecificMessage = '';
+                let burdenWork10SpecificMessage = '';
+                let burdenWork11SpecificMessage = '';
+
+                // Function to get the text of a checklist item by its ID
+                const getItemTextById = (id) => {
+                    // Check main checklist items
+                    const mainItem = checklistItems.find(item => item.id === id);
+                    if (mainItem) return mainItem.text;
+
+                    // Check sub-checklist items (all levels)
+                    const allSubItems = [
+                        ...subChecklistItems1,
+                        ...subChecklistItems2,
+                        ...subChecklistItems3,
+                        ...subChecklistItems4_radio,
+                        checkboxItem4_2,
+                        ...subChecklistItems6_radio,
+                        checkboxItem6_3,
+                        ...subChecklistItems7_radio,
+                        checkboxItem7_2,
+                        // New 8, 9 and 10 related items
+                        ...subChecklistItems_8_over_25kg_lifting,
+                        ...subChecklistItems_9_over_10kg_lifting,
+                        good_posture_checkbox_9,
+                        ...subChecklistItems_10_high_frequency,
+                        ...subSubChecklistItems_4_5kg_plus_high_frequency,
+                        ...subChecklistItems11
+                    ];
+                    const subItem = allSubItems.find(item => item.id === id);
+                    if (subItem) return subItem.text;
+
+                    return `Unknown Item (ID: ${id})`;
+                };
+
+                // --- Start: Burden Work 1 specific logic to determine message ---
+                const keyboardMouseInputCheckbox = document.getElementById('keyboard_mouse_input');
+                const keyboardSpeedRadio = document.getElementById('keyboard_speed');
+                const mouseCadDesignRadio = document.getElementById('mouse_cad_design');
+                const officeWorkRadio = document.getElementById('office_work');
+                const notApplicable1Radio = document.getElementById('not_applicable_1');
+
+                if (keyboardMouseInputCheckbox && keyboardMouseInputCheckbox.checked) {
+                    const anySubChecked = (keyboardSpeedRadio && keyboardSpeedRadio.checked) || (mouseCadDesignRadio && mouseCadDesignRadio.checked) || (officeWorkRadio && officeWorkRadio.checked) || (notApplicable1Radio && notApplicable1Radio.checked);
+                    if (!anySubChecked) {
+                        burdenWork1SpecificMessage = '하부 항목 선택하지 않음';
+                    } else if ((keyboardSpeedRadio && keyboardSpeedRadio.checked) || (mouseCadDesignRadio && mouseCadDesignRadio.checked)) {
+                        if (totalDailyMinutes >= (4 * 60)) { // 4 hours = 240 minutes
+                            burdenWork1SpecificMessage = '부담작업 1호의 가능성이 있습니다.';
+                        } else {
+                            burdenWork1SpecificMessage = '부담작업 1호의 가능성이 없습니다.';
+                        }
+                    } else if ((officeWorkRadio && officeWorkRadio.checked) || (notApplicable1Radio && notApplicable1Radio.checked)) {
+                        burdenWork1SpecificMessage = '부담작업 1호의 가능성이 없습니다.';
+                    }
+                }
+                // --- End: Burden Work 1 specific logic to determine message ---
+
+                // --- Start: Burden Work 2 specific logic to determine message ---
+                const repetitiveUpperLimbCheckbox = document.getElementById('repetitive_upper_limb');
+                const repetitiveUpperLimbSubRadios = [
+                    document.getElementById('shoulder_lift_freq'),
+                    document.getElementById('elbow_flex_ext_freq'),
+                    document.getElementById('wrist_flex_ext_freq'),
+                    document.getElementById('finger_flex_ext_freq')
+                ];
+                const notApplicable2Radio = document.getElementById('not_applicable_2');
+
+                if (repetitiveUpperLimbCheckbox && repetitiveUpperLimbCheckbox.checked) {
+                    const anySubChecked = repetitiveUpperLimbSubRadios.some(radio => radio && radio.checked) || (notApplicable2Radio && notApplicable2Radio.checked);
+                    if (!anySubChecked) {
+                        burdenWork2SpecificMessage = '하부 항목 선택하지 않음';
+                    } else if (anySubChecked && !(notApplicable2Radio && notApplicable2Radio.checked)) { // If any specific repetitive sub-option is checked
+                        if (totalDailyMinutes >= (2 * 60)) { // 2 hours = 120 minutes
+                            burdenWork2SpecificMessage = '부담작업 2호의 가능성이 있습니다.';
+                        } else {
+                            burdenWork2SpecificMessage = '부담작업 2호의 가능성이 없습니다.';
+                        }
+                    } else if (notApplicable2Radio && notApplicable2Radio.checked) {
+                        burdenWork2SpecificMessage = '부담작업 2호의 가능성이 없습니다.';
+                    }
+                }
+                // --- End: Burden Work 2 specific logic to determine message ---
+
+                // --- Start: Burden Work 3 specific logic to determine message ---
+                const shoulderReachingCheckbox = document.getElementById('shoulder_reaching');
+                const armRaise45DegRadio = document.getElementById('arm_raise_45_deg');
+                const notApplicable3Radio = document.getElementById('not_applicable_3');
+
+                if (shoulderReachingCheckbox && shoulderReachingCheckbox.checked) {
+                    const anySubChecked = (armRaise45DegRadio && armRaise45DegRadio.checked) || (notApplicable3Radio && notApplicable3Radio.checked);
+                    if (!anySubChecked) {
+                        burdenWork3SpecificMessage = '하부 항목 선택하지 않음';
+                    } else if (armRaise45DegRadio && armRaise45DegRadio.checked) {
+                        if (totalDailyMinutes >= (2 * 60)) { // 2 hours = 120 minutes
+                            burdenWork3SpecificMessage = '부담작업 3호의 가능성이 있습니다.';
+                        } else {
+                            burdenWork3SpecificMessage = '부담작업 3호의 가능성이 없습니다.';
+                        }
+                    } else if (notApplicable3Radio && notApplicable3Radio.checked) {
+                        burdenWork3SpecificMessage = '부담작업 3호의 가능성이 없습니다.';
+                    }
+                }
+                // --- End: Burden Work 3 specific logic to determine message ---
+
+                // --- Start: Burden Work 4 specific logic to determine message ---
+                const neckBackBendingTwistingCheckbox = document.getElementById('neck_back_bending_twisting');
+                const neckWaistBendTwist20degRadio = document.getElementById('neck_waist_bend_twist_20deg');
+                const bodyHeadSupportWorkCheckbox = document.getElementById('body_head_support_work_checkbox');
+                const notApplicable4Radio = document.getElementById('not_applicable_4');
+
+                if (neckBackBendingTwistingCheckbox && neckBackBendingTwistingCheckbox.checked) {
+                    const anyRadioSelected = (neckWaistBendTwist20degRadio && neckWaistBendTwist20degRadio.checked) || (notApplicable4Radio && notApplicable4Radio.checked);
+                    if (!anyRadioSelected) { // If main is checked but no sub-radio is selected
+                        burdenWork4SpecificMessage = '하부 항목 선택하지 않음';
+                    } else if ((bodyHeadSupportWorkCheckbox && bodyHeadSupportWorkCheckbox.checked) || (notApplicable4Radio && notApplicable4Radio.checked)) {
+                        burdenWork4SpecificMessage = '부담작업 4호의 가능성이 없습니다.';
+                    } else if (neckWaistBendTwist20degRadio && neckWaistBendTwist20degRadio.checked) {
+                        if (totalDailyMinutes >= (2 * 60)) { // 2 hours = 120 minutes
+                            burdenWork4SpecificMessage = '부담작업 4호의 가능성이 있습니다.';
+                        } else {
+                            burdenWork4SpecificMessage = '부담작업 4호의 가능성이 없습니다.';
+                        }
+                    }
+                }
+                // --- End: Burden Work 4 specific logic to determine message ---
+
+                // --- Start: Burden Work 5 specific logic to determine message ---
+                const kneeBendingSquattingCheckbox = document.getElementById('knee_bending_squatting');
+                if (kneeBendingSquattingCheckbox && kneeBendingSquattingCheckbox.checked) {
+                    if (totalDailyMinutes < (2 * 60)) { // Less than 2 hours = 120 minutes
+                        burdenWork5SpecificMessage = '부담작업 5호의 가능성이 없습니다.';
+                    } else { // 2 hours or more
+                        burdenWork5SpecificMessage = '부담작업 5호의 가능성이 있습니다.';
+                    }
+                }
+                // --- End: Burden Work 5 specific logic to determine message ---
+
+                // --- Start: Burden Work 6 specific logic to determine message ---
+                const singleFingerPickingCheckbox = document.getElementById('single_finger_picking');
+                const grip1kgPlusRadio = document.getElementById('grip_1kg_plus');
+                const pushPull2kgEquivalentRadio = document.getElementById('push_pull_2kg_equivalent');
+                const armHandSupportWorkCheckbox = document.getElementById('arm_hand_support_work_checkbox');
+                const notApplicable6Radio = document.getElementById('not_applicable_6');
+
+                if (singleFingerPickingCheckbox && singleFingerPickingCheckbox.checked) {
+                    const anyRadioSelected = (grip1kgPlusRadio && grip1kgPlusRadio.checked) || (pushPull2kgEquivalentRadio && pushPull2kgEquivalentRadio.checked) || (notApplicable6Radio && notApplicable6Radio.checked);
+                    if (!anyRadioSelected) { // If main is checked but no sub-radio is selected
+                        burdenWork6SpecificMessage = '하부 항목 선택하지 않음';
+                    } else if ((armHandSupportWorkCheckbox && armHandSupportWorkCheckbox.checked) || (notApplicable6Radio && notApplicable6Radio.checked)) {
+                        burdenWork6SpecificMessage = '부담작업 6호의 가능성이 없습니다.';
+                    } else if ((grip1kgPlusRadio && grip1kgPlusRadio.checked) || (pushPull2kgEquivalentRadio && pushPull2kgEquivalentRadio.checked)) {
+                        if (totalDailyMinutes >= (2 * 60)) { // 2 hours = 120 minutes
+                            burdenWork6SpecificMessage = '부담작업 6호의 가능성이 있습니다.';
+                        } else {
+                            burdenWork6SpecificMessage = '부담작업 6호의 가능성이 없습니다.';
+                        }
+                    }
+                }
+                // --- End: Burden Work 6 specific logic to determine message ---
+
+                // --- Start: Burden Work 7 specific logic to determine message ---
+                const singleHandToolUseCheckbox = document.getElementById('single_hand_tool_use');
+                const tool4_5kgPlusRadio = document.getElementById('tool_4_5kg_plus');
+                const armHandSupportWork7Checkbox = document.getElementById('arm_hand_support_work_7_checkbox');
+                const notApplicable7Radio = document.getElementById('not_applicable_7');
+
+                if (singleHandToolUseCheckbox && singleHandToolUseCheckbox.checked) {
+                    const anyRadioSelected = (tool4_5kgPlusRadio && tool4_5kgPlusRadio.checked) || (notApplicable7Radio && notApplicable7Radio.checked);
+                    if (!anyRadioSelected) { // If main is checked but no sub-radio is selected
+                        burdenWork7SpecificMessage = '하부 항목 선택하지 않음';
+                    } else if ((armHandSupportWork7Checkbox && armHandSupportWork7Checkbox.checked) || (notApplicable7Radio && notApplicable7Radio.checked)) {
+                        burdenWork7SpecificMessage = '부담작업 7호의 가능성이 없습니다.';
+                    } else if (tool4_5kgPlusRadio && tool4_5kgPlusRadio.checked) {
+                        if (totalDailyMinutes >= (2 * 60)) { // 2 hours = 120 minutes
+                            burdenWork7SpecificMessage = '부담작업 7호의 가능성이 있습니다.';
+                        } else {
+                            burdenWork7SpecificMessage = '부담작업 7호의 가능성이 없습니다.';
+                        }
+                    }
+                }
+                // --- End: Burden Work 7 specific logic to determine message ---
+
+                // --- Start: Burden Work 8 specific logic (new item 8) ---
+                const liftingOver25kg8Checkbox = document.getElementById('lifting_over_25kg_8');
+                const totalLess10Count8 = document.getElementById('total_less_10_count_8')?.checked;
+                const totalMore10Count8 = document.getElementById('total_more_10_count_8')?.checked;
+
+                if (liftingOver25kg8Checkbox && liftingOver25kg8Checkbox.checked) {
+                    const anySubOptionSelected = totalLess10Count8 || totalMore10Count8;
+                    if (!anySubOptionSelected) {
+                        burdenWork8SpecificMessage = '하부 항목 선택하지 않음';
+                    } else if (totalMore10Count8) { // Removed time condition
+                        burdenWork8SpecificMessage = '부담작업 8호 입니다.';
+                    } else { // totalLess10Count8 is checked
+                        burdenWork8SpecificMessage = '부담작업 8호가 아닙니다.';
+                    }
+                }
+                // --- End: Burden Work 8 specific logic ---
+
+                // --- Start: Burden Work 9 specific logic (new item 9) ---
+                const liftingOver10kg9Checkbox = document.getElementById('lifting_over_10kg_9');
+                const totalLess25Count9 = document.getElementById('total_less_25_count_9')?.checked;
+                const totalMore25Count9 = document.getElementById('total_more_25_count_9')?.checked;
+                const goodPostureCheckbox9 = document.getElementById('good_posture_checkbox_9')?.checked;
+
+                if (liftingOver10kg9Checkbox && liftingOver10kg9Checkbox.checked) {
+                    const anySubOptionSelected = totalLess25Count9 || totalMore25Count9;
+                    if (!anySubOptionSelected) {
+                        burdenWork9SpecificMessage = '하부 항목 선택하지 않음';
+                    } else if (totalMore25Count9) { // Removed time condition
+                        if (goodPostureCheckbox9) { // If good posture is selected
+                            burdenWork9SpecificMessage = '부담작업 9호가 아닙니다.';
+                        } else { // If good posture is NOT selected
+                            burdenWork9SpecificMessage = '부담작업 9호 입니다.';
+                        }
+                    } else { // totalLess25Count9 is checked
+                        burdenWork9SpecificMessage = '부담작업 9호가 아닙니다.';
+                    }
+                }
+                // --- End: Burden Work 9 specific logic ---
+
+                // --- Start: Burden Work 10 specific logic (from new item 10) ---
+                const highFrequencyRepetitiveLifting10Checkbox = document.getElementById('high_frequency_repetitive_lifting_10');
+                const liftingLess4_5kgHighFrequency = document.getElementById('lifting_less_4_5kg_high_frequency')?.checked;
+                const liftingMore4_5kgHighFrequency = document.getElementById('lifting_more_4_5kg_high_frequency')?.checked;
+                const less2PerMin4_5kgPlusHighFrequency = document.getElementById('less_2_per_min_4_5kg_plus_high_frequency')?.checked;
+                const more2PerMin4_5kgPlusHighFrequency = document.getElementById('more_2_per_min_4_5kg_plus_high_frequency')?.checked;
+
+                if (highFrequencyRepetitiveLifting10Checkbox && highFrequencyRepetitiveLifting10Checkbox.checked) {
+                    const anyDirectSubOptionSelected = liftingLess4_5kgHighFrequency || liftingMore4_5kgHighFrequency;
+
+                    if (!anyDirectSubOptionSelected) {
+                        burdenWork10SpecificMessage = '하부 항목 선택하지 않음';
+                    } else if (liftingMore4_5kgHighFrequency) {
+                        // If '4.5kg 이상 들기작업' is selected, check its nested options
+                        const anyNestedHighFrequencySelected = less2PerMin4_5kgPlusHighFrequency || more2PerMin4_5kgPlusHighFrequency;
+
+                        if (!anyNestedHighFrequencySelected) {
+                            burdenWork10SpecificMessage = '하부 항목 선택하지 않음';
+                        } else if (more2PerMin4_5kgPlusHighFrequency) {
+                            if (totalDailyMinutes >= (2 * 60)) { // 2 hours = 120 minutes
+                                burdenWork10SpecificMessage = '부담작업 10호의 가능성이 있습니다.';
+                            } else {
+                                burdenWork10SpecificMessage = '부담작업 10호의 가능성이 없습니다.';
+                            }
+                        } else { // less2PerMin4_5kgPlusHighFrequency is checked
+                            burdenWork10SpecificMessage = '부담작업 10호의 가능성이 없습니다.';
+                        }
+                    } else { // liftingLess4_5kgHighFrequency is checked
+                        burdenWork10SpecificMessage = '부담작업 10호의 가능성이 없습니다.';
+                    }
+                }
+                // --- End: Burden Work 10 specific logic ---
+
+                // --- Start: Burden Work 11 specific logic to determine message ---
+                const handKneeTapping11Checkbox = document.getElementById('hand_knee_tapping_11');
+                const tapping10PerHour11Radio = document.getElementById('tapping_10_per_hour_11');
+                const notApplicable11Radio = document.getElementById('not_applicable_11');
+
+                if (handKneeTapping11Checkbox && handKneeTapping11Checkbox.checked) {
+                    const anySubOptionSelected = tapping10PerHour11Radio || notApplicable11Radio;
+                    if (!anySubOptionSelected) {
+                        burdenWork11SpecificMessage = '하부 항목 선택하지 않음';
+                    } else if (tapping10PerHour11Radio && tapping10PerHour11Radio.checked) {
+                        if (totalDailyMinutes >= (2 * 60)) { // 2 hours = 120 minutes
+                            burdenWork11SpecificMessage = '부담작업 11호의 가능성이 있습니다.';
+                        } else {
+                            burdenWork11SpecificMessage = '부담작업 11호의 가능성이 없습니다.';
+                        }
+                    } else if (notApplicable11Radio && notApplicable11Radio.checked) {
+                        burdenWork11SpecificMessage = '부담작업 11호의 가능성이 없습니다.';
+                    }
+                }
+                // --- End: Burden Work 11 specific logic to determine message ---
+
+
+                // Populate the analysis results list
+                checklistItems.forEach(item => {
+                    const li = document.createElement('li');
+                    const mainCheckbox = document.getElementById(item.id);
+
+                    if (mainCheckbox && mainCheckbox.checked) {
+                        // If the main checkbox is checked, add its text in default black color
+                        li.textContent = item.text; 
+
+                        // Handle sub-items if they exist and are checked
+                        const subChecklistDiv = document.getElementById(`subChecklist_${item.id}`);
+                        if (subChecklistDiv) {
+                            const checkedSubInputs = subChecklistDiv.querySelectorAll('input[type="radio"]:checked, input[type="checkbox"]:checked');
+                            
+                            checkedSubInputs.forEach(subInput => {
+                                // Skip adding the good_posture_checkbox_9 as a separate sub-item for display
+                                // because it's handled by burden 9 assessment logic directly.
+                                if (subInput.id === good_posture_checkbox_9.id) {
+                                    return; 
+                                }
+                                const subItemDiv = document.createElement('div');
+                                subItemDiv.style.marginLeft = '1.5rem'; // Indent sub-items
+                                subItemDiv.textContent = `- ${getItemTextById(subInput.id)}`; // Default black text for checked sub-items
+                                li.appendChild(subItemDiv);
+                            });
+                        }
+                        
+                        // Append specific burden messages
+                        let currentBurdenMessage = '';
+
+                        if (item.id === 'keyboard_mouse_input') {
+                            currentBurdenMessage = burdenWork1SpecificMessage;
+                        } else if (item.id === 'repetitive_upper_limb') {
+                            currentBurdenMessage = burdenWork2SpecificMessage;
+                        } else if (item.id === 'shoulder_reaching') {
+                            currentBurdenMessage = burdenWork3SpecificMessage;
+                        } else if (item.id === 'neck_back_bending_twisting') {
+                            currentBurdenMessage = burdenWork4SpecificMessage;
+                        } else if (item.id === 'knee_bending_squatting') {
+                            currentBurdenMessage = burdenWork5SpecificMessage;
+                        } else if (item.id === 'single_finger_picking') {
+                            currentBurdenMessage = burdenWork6SpecificMessage;
+                        } else if (item.id === 'single_hand_tool_use') {
+                            currentBurdenMessage = burdenWork7SpecificMessage;
+                        } else if (item.id === 'lifting_over_25kg_8') {
+                            currentBurdenMessage = burdenWork8SpecificMessage;
+                        } else if (item.id === 'lifting_over_10kg_9') {
+                            currentBurdenMessage = burdenWork9SpecificMessage;
+                        } else if (item.id === 'high_frequency_repetitive_lifting_10') {
+                            currentBurdenMessage = burdenWork10SpecificMessage;
+                        }
+                         else if (item.id === 'hand_knee_tapping_11') {
+                            currentBurdenMessage = burdenWork11SpecificMessage;
+                        }
+
+                        if (currentBurdenMessage) { // Only append if there's a message
+                            const burdenMessageDiv = document.createElement('div');
+                            burdenMessageDiv.className = 'pt-2 burden-work-message'; // Apply class for styling
+                            burdenMessageDiv.style.marginLeft = '1.5rem'; // Indent to align with sub-items
+                            // Make the entire currentBurdenMessage bold
+                            burdenMessageDiv.innerHTML = `<strong>▶</strong> <strong>${currentBurdenMessage}</strong>`;
+
+                            if ((currentBurdenMessage.includes('있습니다')) || (currentBurdenMessage.includes('입니다'))) {
+                                burdenMessageDiv.classList.add('text-red-700'); // Red for "있습니다"
+                            } else if (currentBurdenMessage.includes('선택하지 않음')) {
+                                burdenMessageDiv.classList.add('not-selected-sub-item-text'); // Red for "선택하지 않음"
+                            }
+                            // If not "있습니다" or "선택하지 않음", it will inherit the default black color from .analysis-result-box
+                            li.appendChild(burdenMessageDiv);
+                        }
+
+                    } else {
+                        // If the main checkbox is NOT checked, add its text in green and "(선택하지 않음)" in red
+                        li.innerHTML = `<span class="unselected-main-text">${item.text}</span> <span class="not-selected-text">(선택하지 않음)</span>`;
+                    }
+                    selectedItemsList.appendChild(li);
+                });
+
+                // Show the final message container
+                document.getElementById('finalMessageContainer').classList.remove('hidden');
+
+                // Show the analysis result section
+                document.getElementById('analysisResult').classList.remove('hidden');
+
+                // Enable print button
+                printReportButton.disabled = false;
+            });
+
+            // Add event listener for the print button
+            document.getElementById('printReportButton').addEventListener('click', handlePrint);
+            function handlePrint() {
+                window.print(); // Trigger the browser's print dialog
+            }
+
+            // Add event listener for the new reset button
+            document.getElementById('resetButton').addEventListener('click', resetForm);
+        };
+    </script>
+</body>
+</html>
