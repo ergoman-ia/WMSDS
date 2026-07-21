@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>포토룰러 — 사진으로 크기 재기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#15171C;
+    --panel:#1E222A;
+    --panel-2:#262B35;
+    --line:#343B47;
+    --tape:#FFC93C;      /* 기준 — 줄자 노랑 */
+    --measure:#4FD1C5;   /* 측정 — 틸 */
+    --text:#E9EBEE;
+    --muted:#9AA1AB;
+    --danger:#FF6B6B;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--ink);color:var(--text);
+    font-family:"IBM Plex Sans KR",system-ui,sans-serif;font-size:15px;
+    display:flex;flex-direction:column;
+  }
+  .mono{font-family:"IBM Plex Mono",monospace}
+
+  header{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  header h1{font-size:17px;font-weight:700;letter-spacing:-.2px}
+  header h1 .tick{color:var(--tape)}
+  #scaleReadout{margin-left:auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:7px 14px;font-size:13px;color:var(--muted)}
+  #scaleReadout b{color:var(--tape);font-weight:700}
+
+  main{flex:1;display:flex;min-height:0}
+  #stage{
+    flex:1;position:relative;display:flex;align-items:center;justify-content:center;
+    background:
+      linear-gradient(var(--ink) 0 0) padding-box,
+      repeating-linear-gradient(0deg,#1B1E24 0 1px,transparent 1px 24px),
+      repeating-linear-gradient(90deg,#1B1E24 0 1px,transparent 1px 24px);
+    overflow:hidden;min-width:0;
+  }
+  #canvas{max-width:100%;max-height:100%;touch-action:none;cursor:crosshair;display:none}
+  #dropzone{
+    border:1.5px dashed var(--line);border-radius:14px;padding:52px 44px;text-align:center;
+    color:var(--muted);cursor:pointer;transition:border-color .15s, background .15s;max-width:420px;
+  }
+  #dropzone.drag{border-color:var(--tape);background:rgba(255,201,60,.05)}
+  #dropzone strong{display:block;color:var(--text);font-size:16px;margin-bottom:6px}
+  #dropzone .hint{font-size:13px;line-height:1.6}
+
+  aside{width:330px;flex-shrink:0;border-left:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;overflow-y:auto}
+  .section{padding:16px 18px;border-bottom:1px solid var(--line)}
+  .section h2{font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-bottom:10px}
+  .steps{font-size:13px;color:var(--muted);line-height:1.7}
+  .steps b{color:var(--text)}
+
+  .modes{display:flex;gap:8px}
+  .mode-btn{
+    flex:1;padding:10px 8px;border-radius:var(--radius);border:1px solid var(--line);
+    background:var(--panel-2);color:var(--muted);font:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:all .12s;
+  }
+  .mode-btn:hover{color:var(--text)}
+  .mode-btn.active-ref{border-color:var(--tape);color:var(--tape);background:rgba(255,201,60,.08)}
+  .mode-btn.active-measure{border-color:var(--measure);color:var(--measure);background:rgba(79,209,197,.08)}
+  .mode-btn:disabled{opacity:.4;cursor:not-allowed}
+
+  .seg{display:flex;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-top:10px}
+  .seg button{
+    flex:1;padding:8px 6px;background:var(--panel-2);border:none;color:var(--muted);
+    font:inherit;font-size:12.5px;cursor:pointer;
+  }
+  .seg button.on{background:rgba(255,201,60,.12);color:var(--tape);font-weight:700}
+
+  .cal-row{display:flex;gap:8px;margin-top:10px}
+  .cal-row input{
+    flex:1;min-width:0;background:var(--ink);border:1px solid var(--line);border-radius:var(--radius);
+    color:var(--text);padding:9px 12px;font:inherit;font-size:14px;
+  }
+  .cal-row input:focus{outline:none;border-color:var(--tape)}
+  .btn{background:var(--tape);color:#1A1608;border:none;border-radius:var(--radius);padding:9px 14px;font:inherit;font-weight:700;cursor:pointer;white-space:nowrap}
+  .btn:disabled{opacity:.35;cursor:not-allowed}
+  .btn.ghost{background:var(--panel-2);color:var(--text);border:1px solid var(--line);font-weight:500}
+
+  #measureList{list-style:none;display:flex;flex-direction:column;gap:8px}
+  #measureList li{display:flex;align-items:center;gap:10px;background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius);padding:9px 12px;font-size:13px}
+  #measureList .chip{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+  #measureList .name{flex:1;background:none;border:none;color:var(--text);font:inherit;min-width:0}
+  #measureList .name:focus{outline:1px solid var(--line);border-radius:4px}
+  #measureList .val{color:var(--measure);font-weight:700;font-size:14px}
+  #measureList .del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px;padding:0 2px}
+  #measureList .del:hover{color:var(--danger)}
+  .empty{font-size:13px;color:var(--muted)}
+
+  #aiResult{font-size:13px;line-height:1.7;color:var(--muted);white-space:pre-wrap}
+  #aiResult table{width:100%;border-collapse:collapse;margin-top:8px}
+  #aiResult td{padding:6px 4px;border-bottom:1px solid var(--line);color:var(--text)}
+  #aiResult td:last-child{text-align:right;color:var(--measure);font-family:"IBM Plex Mono",monospace;font-weight:700}
+  .spin{display:inline-block;width:13px;height:13px;border:2px solid var(--line);border-top-color:var(--tape);border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px;margin-right:6px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+
+  .note{font-size:12px;color:var(--muted);line-height:1.6;margin-top:10px}
+  .badge{display:inline-block;padding:1px 7px;border-radius:99px;font-size:11px;font-weight:700;vertical-align:1px}
+  .badge.persp{background:rgba(255,201,60,.15);color:var(--tape)}
+  footer{padding:10px 20px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+
+  @media (max-width: 880px){
+    main{flex-direction:column}
+    aside{width:100%;border-left:none;border-top:1px solid var(--line)}
+    #stage{min-height:46vh}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span class="tick">▮</span> 포토룰러 <span style="color:var(--muted);font-weight:400;font-size:13px">사진 속 물건 크기 재기</span></h1>
+  <div id="scaleReadout" class="mono">기준 미설정</div>
+</header>
+
+<main>
+  <div id="stage">
+    <div id="dropzone">
+      <strong>사진을 끌어다 놓거나 클릭해서 선택</strong>
+      <div class="hint">크기를 아는 물건(카드, A4 용지, 자 등)이<br>함께 찍힌 사진이면 더 정확해요.</div>
+      <input type="file" id="fileInput" accept="image/*" hidden>
+    </div>
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <aside>
+    <div class="section">
+      <h2>사용 방법</h2>
+      <div class="steps">
+        <b>1.</b> 사진 업로드 → <b>2.</b> <span style="color:var(--tape)">기준</span> 지정 →
+        <b>3.</b> 실제 크기(cm) 입력 → <b>4.</b> <span style="color:var(--measure)">측정</span> 모드로 물건 위를 드래그
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>모드</h2>
+      <div class="modes">
+        <button class="mode-btn active-ref" id="modeRef">① 기준 설정</button>
+        <button class="mode-btn" id="modeMeasure" disabled>② 측정</button>
+      </div>
+
+      <div class="seg" id="calMethodSeg">
+        <button id="methodQuad" class="on">사각형 기준 (원근 보정)</button>
+        <button id="methodLine">직선 기준</button>
+      </div>
+
+      <!-- 직선 기준 -->
+      <div id="linePanel" style="display:none">
+        <div class="cal-row">
+          <input type="number" id="refLength" placeholder="기준 실제 길이 (cm)" min="0.1" step="0.1" inputmode="decimal">
+          <button class="btn" id="applyRef" disabled>적용</button>
+        </div>
+        <div class="note" id="refStatus">크기를 아는 물건 위에 드래그해 노란 기준선을 그려주세요. (신용카드 가로 8.56 cm, A4 세로 29.7 cm)</div>
+      </div>
+
+      <!-- 사각형 기준 (원근 보정) -->
+      <div id="quadPanel">
+        <div class="cal-row">
+          <input type="number" id="quadW" placeholder="가로 (cm)" min="0.1" step="0.1" inputmode="decimal">
+          <input type="number" id="quadH" placeholder="세로 (cm)" min="0.1" step="0.1" inputmode="decimal">
+        </div>
+        <div class="cal-row">
+          <button class="btn ghost" id="quadReset" style="flex:1">모서리 다시 찍기</button>
+          <button class="btn" id="applyQuad" disabled>적용</button>
+        </div>
+        <div class="note" id="quadStatus">크기를 아는 <b style="color:var(--text)">직사각형 물체</b>(A4, 카드, 책, 타일 등)의 네 모서리를 <b style="color:var(--tape)">좌상단부터 시계 방향</b>으로 클릭하세요. (0/4)</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>측정 결과</h2>
+      <ul id="measureList"></ul>
+      <div class="empty" id="listEmpty">측정한 항목이 여기에 표시됩니다.</div>
+      <div class="cal-row" style="margin-top:12px">
+        <button class="btn ghost" id="clearAll" style="flex:1">전체 지우기</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>AI 물건 분석 — Gemini (선택)</h2>
+      <div class="cal-row" style="margin-top:0">
+        <input type="password" id="apiKey" placeholder="Gemini API 키 (AIza…)" autocomplete="off">
+      </div>
+      <div class="cal-row">
+        <input type="text" id="aiModel" value="gemini-2.5-flash" placeholder="모델명" class="mono" style="font-size:12.5px">
+        <button class="btn ghost" id="aiBtn" disabled>분석</button>
+      </div>
+      <div id="aiResult" class="note">Google AI Studio(aistudio.google.com)에서 발급한 API 키를 입력하고, 기준을 설정한 뒤 [분석]을 누르세요. 키는 저장되지 않고 이 화면에서만 사용됩니다.</div>
+    </div>
+
+    <div class="section" style="border-bottom:none">
+      <h2>정확도 팁</h2>
+      <div class="note" style="margin-top:0">
+        · 사진이 <b style="color:var(--text)">비스듬히 찍혔다면 반드시 [사각형 기준]</b>을 쓰세요. 네 모서리로 기울어진 평면을 정면으로 펴서(원근 보정) 계산합니다.<br>
+        · 원근 보정은 <b style="color:var(--text)">기준 사각형과 같은 평면</b>(같은 바닥, 같은 벽, 같은 책상면) 위 물건에만 정확합니다. 평면에서 튀어나온 높이 방향은 별도 기준이 필요해요.<br>
+        · 직선 기준은 정면에서 찍은 사진에만 적합합니다.
+      </div>
+    </div>
+  </aside>
+</main>
+
+<footer>측정값은 사진 기준 근사치입니다 · 정밀 치수가 필요하면 실제 자로 확인하세요</footer>
+
+<script>
+(() => {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const stage = document.getElementById('stage');
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+  const modeRefBtn = document.getElementById('modeRef');
+  const modeMeasureBtn = document.getElementById('modeMeasure');
+  const methodLineBtn = document.getElementById('methodLine');
+  const methodQuadBtn = document.getElementById('methodQuad');
+  const linePanel = document.getElementById('linePanel');
+  const quadPanel = document.getElementById('quadPanel');
+  const refLengthInput = document.getElementById('refLength');
+  const applyRefBtn = document.getElementById('applyRef');
+  const refStatus = document.getElementById('refStatus');
+  const quadWInput = document.getElementById('quadW');
+  const quadHInput = document.getElementById('quadH');
+  const applyQuadBtn = document.getElementById('applyQuad');
+  const quadResetBtn = document.getElementById('quadReset');
+  const quadStatus = document.getElementById('quadStatus');
+  const scaleReadout = document.getElementById('scaleReadout');
+  const listEl = document.getElementById('measureList');
+  const listEmpty = document.getElementById('listEmpty');
+  const clearAllBtn = document.getElementById('clearAll');
+  const aiBtn = document.getElementById('aiBtn');
+  const aiResult = document.getElementById('aiResult');
+  const apiKeyInput = document.getElementById('apiKey');
+  const aiModelInput = document.getElementById('aiModel');
+
+  const COLORS = ['#4FD1C5','#7AA2F7','#F78AC1','#A8E06B','#F7B267','#B69CFF','#6BE0D2'];
+  const CORNER_LABELS = ['① 좌상','② 우상','③ 우하','④ 좌하'];
+
+  let img = null;
+  let mode = 'ref';            // 'ref' | 'measure'
+  let calMethod = 'quad';      // 'quad' | 'line' — 사각형(원근 보정)이 기본
+  // 직선 기준
+  let refLine = null;          // {x1,y1,x2,y2} 이미지 좌표
+  let pxPerCm = null;
+  // 사각형 기준 (원근 보정)
+  let quadPts = [];            // [{x,y} x4] 이미지 좌표
+  let H = null;                // 3x3 호모그래피: 이미지(px) → 평면(cm)
+  let measures = [];
+  let drawing = null;
+  let nextId = 1;
+  let viewScale = 1;
+
+  /* ───────── 이미지 로드 ───────── */
+  dropzone.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', e => { if (e.target.files[0]) loadFile(e.target.files[0]); });
+  ['dragover','dragenter'].forEach(ev => stage.addEventListener(ev, e => { e.preventDefault(); dropzone.classList.add('drag'); }));
+  ['dragleave','drop'].forEach(ev => stage.addEventListener(ev, e => { e.preventDefault(); dropzone.classList.remove('drag'); }));
+  stage.addEventListener('drop', e => {
+    const f = e.dataTransfer.files[0];
+    if (f && f.type.startsWith('image/')) loadFile(f);
+  });
+
+  function loadFile(file){
+    const url = URL.createObjectURL(file);
+    const im = new Image();
+    im.onload = () => {
+      img = im;
+      refLine = null; pxPerCm = null; quadPts = []; H = null;
+      measures = []; drawing = null;
+      dropzone.style.display = 'none';
+      canvas.style.display = 'block';
+      setMode('ref');
+      applyRefBtn.disabled = true; applyQuadBtn.disabled = true;
+      modeMeasureBtn.disabled = true; aiBtn.disabled = true;
+      refStatus.innerHTML = '크기를 아는 물건 위에 드래그해 노란 기준선을 그려주세요. (신용카드 가로 8.56 cm, A4 세로 29.7 cm)';
+      updateQuadStatus();
+      updateScaleReadout(); renderList(); fitCanvas(); draw();
+      aiResult.textContent = 'Gemini API 키를 입력하고 기준을 설정한 뒤 [분석]을 누르면, AI가 사진 속 물건들을 알아보고 대략적인 크기를 추정합니다.';
+      URL.revokeObjectURL(url);
+    };
+    im.src = url;
+  }
+
+  /* ───────── 캔버스 크기 ───────── */
+  function fitCanvas(){
+    if (!img) return;
+    const pad = 24;
+    const maxW = stage.clientWidth - pad, maxH = stage.clientHeight - pad;
+    viewScale = Math.min(maxW / img.naturalWidth, maxH / img.naturalHeight, 1.5);
+    const dpr = window.devicePixelRatio || 1;
+    canvas.style.width  = Math.round(img.naturalWidth  * viewScale) + 'px';
+    canvas.style.height = Math.round(img.naturalHeight * viewScale) + 'px';
+    canvas.width  = Math.round(img.naturalWidth  * viewScale * dpr);
+    canvas.height = Math.round(img.naturalHeight * viewScale * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  window.addEventListener('resize', () => { fitCanvas(); draw(); });
+
+  function toImgCoords(e){
+    const r = canvas.getBoundingClientRect();
+    const x = (e.clientX - r.left) / viewScale;
+    const y = (e.clientY - r.top)  / viewScale;
+    return {
+      x: Math.max(0, Math.min(img.naturalWidth,  x)),
+      y: Math.max(0, Math.min(img.naturalHeight, y))
+    };
+  }
+
+  /* ───────── 입력: 드래그(선) / 클릭(모서리) ───────── */
+  canvas.addEventListener('pointerdown', e => {
+    if (!img) return;
+    canvas.setPointerCapture(e.pointerId);
+    const p = toImgCoords(e);
+    if (mode === 'ref' && calMethod === 'quad') {
+      if (quadPts.length < 4) {
+        quadPts.push(p);
+        H = null;                      // 새 모서리 → 재보정 필요
+        updateQuadStatus(); updateScaleReadout(); refreshMeasureValues(); draw();
+      }
+      return;
+    }
+    drawing = { x1: p.x, y1: p.y, x2: p.x, y2: p.y };
+    draw();
+  });
+  canvas.addEventListener('pointermove', e => {
+    if (!drawing) return;
+    const p = toImgCoords(e);
+    drawing.x2 = p.x; drawing.y2 = p.y;
+    draw();
+  });
+  canvas.addEventListener('pointerup', () => {
+    if (!drawing) return;
+    const lenPx = Math.hypot(drawing.x2 - drawing.x1, drawing.y2 - drawing.y1);
+    if (lenPx * viewScale > 8) {
+      if (mode === 'ref') {            // (이 경로는 line 방식만 옴)
+        refLine = { ...drawing };
+        pxPerCm = null;
+        applyRefBtn.disabled = false;
+        refStatus.textContent = `기준선 길이: ${Math.round(lenPx)} px — 실제 길이(cm)를 입력하고 [적용]을 눌러주세요.`;
+        updateScaleReadout(); refreshMeasureValues();
+        refLengthInput.focus();
+      } else {
+        const color = COLORS[measures.length % COLORS.length];
+        measures.push({ id: nextId++, name: `물건 ${measures.length + 1}`, ...drawing, color });
+        renderList();
+      }
+    }
+    drawing = null;
+    draw();
+  });
+
+  /* ───────── 기준 방식 전환 ───────── */
+  methodLineBtn.addEventListener('click', () => setCalMethod('line'));
+  methodQuadBtn.addEventListener('click', () => setCalMethod('quad'));
+  function setCalMethod(m){
+    calMethod = m;
+    methodLineBtn.classList.toggle('on', m === 'line');
+    methodQuadBtn.classList.toggle('on', m === 'quad');
+    linePanel.style.display = m === 'line' ? '' : 'none';
+    quadPanel.style.display = m === 'quad' ? '' : 'none';
+    if (mode !== 'ref') setMode('ref');
+    updateScaleReadout(); refreshMeasureValues(); draw();
+  }
+
+  /* ───────── 직선 기준 적용 ───────── */
+  applyRefBtn.addEventListener('click', applyRef);
+  refLengthInput.addEventListener('keydown', e => { if (e.key === 'Enter') applyRef(); });
+  function applyRef(){
+    const cm = parseFloat(refLengthInput.value);
+    if (!refLine || !cm || cm <= 0) return;
+    pxPerCm = Math.hypot(refLine.x2 - refLine.x1, refLine.y2 - refLine.y1) / cm;
+    H = null;                          // 직선 방식 활성화
+    afterCalibrated('직선 기준 설정 완료 — [② 측정] 모드에서 물건 위를 드래그하세요.', refStatus);
+  }
+
+  /* ───────── 사각형 기준 적용 (호모그래피) ───────── */
+  quadResetBtn.addEventListener('click', () => {
+    quadPts = []; H = null; applyQuadBtn.disabled = true;
+    updateQuadStatus(); updateScaleReadout(); refreshMeasureValues(); draw();
+  });
+  [quadWInput, quadHInput].forEach(inp => inp.addEventListener('input', updateQuadApplyState));
+  applyQuadBtn.addEventListener('click', applyQuad);
+
+  function updateQuadStatus(){
+    const n = quadPts.length;
+    if (n < 4) {
+      quadStatus.innerHTML = `크기를 아는 <b style="color:var(--text)">직사각형 물체</b>의 네 모서리를 <b style="color:var(--tape)">좌상단부터 시계 방향</b>으로 클릭하세요. (${n}/4)` +
+        (n ? ` — 다음: ${CORNER_LABELS[n]}` : '');
+    } else {
+      quadStatus.innerHTML = '네 모서리 지정 완료 — 이 직사각형의 <b style="color:var(--text)">실제 가로·세로(cm)</b>를 입력하고 [적용]을 누르세요. (A4: 21 × 29.7)';
+    }
+    updateQuadApplyState();
+  }
+  function updateQuadApplyState(){
+    applyQuadBtn.disabled = !(quadPts.length === 4 && parseFloat(quadWInput.value) > 0 && parseFloat(quadHInput.value) > 0);
+  }
+
+  function applyQuad(){
+    const W = parseFloat(quadWInput.value), Hcm = parseFloat(quadHInput.value);
+    if (quadPts.length !== 4 || !(W > 0) || !(Hcm > 0)) return;
+    const world = [{x:0,y:0},{x:W,y:0},{x:W,y:Hcm},{x:0,y:Hcm}];   // 좌상→우상→우하→좌하 (cm)
+    const h = computeHomography(quadPts, world);
+    if (!h) {
+      quadStatus.innerHTML = '<span style="color:var(--danger)">네 점이 일직선에 가깝거나 순서가 잘못됐어요. [모서리 다시 찍기] 후 좌상단부터 시계 방향으로 다시 클릭해 주세요.</span>';
+      return;
+    }
+    H = h; pxPerCm = null;             // 원근 보정 방식 활성화
+    afterCalibrated('원근 보정 완료 — 기준 사각형과 <b style="color:var(--text)">같은 평면</b> 위 물건을 [② 측정] 모드로 드래그하세요.', quadStatus);
+  }
+
+  function afterCalibrated(msg, statusEl){
+    statusEl.innerHTML = msg;
+    modeMeasureBtn.disabled = false;
+    aiBtn.disabled = false;
+    setMode('measure');
+    updateScaleReadout(); refreshMeasureValues(); draw();
+  }
+
+  /* 4점 대응 → 3x3 호모그래피 (DLT, 8x8 가우스 소거) */
+  function computeHomography(src, dst){
+    const A = [], b = [];
+    for (let i = 0; i < 4; i++) {
+      const {x, y} = src[i], {x: u, y: v} = dst[i];
+      A.push([x, y, 1, 0, 0, 0, -u*x, -u*y]); b.push(u);
+      A.push([0, 0, 0, x, y, 1, -v*x, -v*y]); b.push(v);
+    }
+    const h = solve8(A, b);
+    if (!h) return null;
+    return [[h[0],h[1],h[2]],[h[3],h[4],h[5]],[h[6],h[7],1]];
+  }
+  function solve8(A, b){
+    const n = 8;
+    const M = A.map((row, i) => [...row, b[i]]);
+    for (let c = 0; c < n; c++) {
+      let piv = c;
+      for (let r = c + 1; r < n; r++) if (Math.abs(M[r][c]) > Math.abs(M[piv][c])) piv = r;
+      if (Math.abs(M[piv][c]) < 1e-10) return null;
+      [M[c], M[piv]] = [M[piv], M[c]];
+      for (let r = 0; r < n; r++) {
+        if (r === c) continue;
+        const f = M[r][c] / M[c][c];
+        for (let k = c; k <= n; k++) M[r][k] -= f * M[c][k];
+      }
+    }
+    return M.map((row, i) => row[n] / row[i]);
+  }
+  function applyH(p){
+    const w = H[2][0]*p.x + H[2][1]*p.y + H[2][2];
+    return {
+      x: (H[0][0]*p.x + H[0][1]*p.y + H[0][2]) / w,
+      y: (H[1][0]*p.x + H[1][1]*p.y + H[1][2]) / w
+    };
+  }
+
+  /* ───────── 길이 계산 (보정 방식에 따라) ───────── */
+  function measureCm(l){
+    if (H) {
+      const a = applyH({x:l.x1, y:l.y1}), b = applyH({x:l.x2, y:l.y2});
+      return Math.hypot(b.x - a.x, b.y - a.y);         // 평면(cm) 좌표에서 거리
+    }
+    if (pxPerCm) return Math.hypot(l.x2 - l.x1, l.y2 - l.y1) / pxPerCm;
+    return null;
+  }
+  function fmt(l){
+    const cm = measureCm(l);
+    if (cm == null) return '? cm';
+    return cm >= 100 ? (cm / 100).toFixed(2) + ' m' : cm.toFixed(1) + ' cm';
+  }
+
+  function updateScaleReadout(){
+    if (H) scaleReadout.innerHTML = '<b>원근 보정 활성</b> · 기준 평면에서 cm 계산';
+    else if (pxPerCm) scaleReadout.innerHTML = `1 cm = <b>${pxPerCm.toFixed(1)} px</b> (직선 기준)`;
+    else scaleReadout.textContent = '기준 미설정';
+  }
+
+  /* ───────── 모드 전환 ───────── */
+  modeRefBtn.addEventListener('click', () => setMode('ref'));
+  modeMeasureBtn.addEventListener('click', () => setMode('measure'));
+  function setMode(m){
+    mode = m;
+    modeRefBtn.className = 'mode-btn' + (m === 'ref' ? ' active-ref' : '');
+    modeMeasureBtn.className = 'mode-btn' + (m === 'measure' ? ' active-measure' : '');
+    draw();
+  }
+
+  /* ───────── 목록 ───────── */
+  clearAllBtn.addEventListener('click', () => { measures = []; renderList(); });
+  function renderList(){
+    listEl.innerHTML = '';
+    listEmpty.style.display = measures.length ? 'none' : 'block';
+    for (const m of measures) {
+      const li = document.createElement('li');
+      const chip = document.createElement('span');
+      chip.className = 'chip'; chip.style.background = m.color;
+      const name = document.createElement('input');
+      name.className = 'name'; name.value = m.name;
+      name.addEventListener('input', () => { m.name = name.value; draw(); });
+      const val = document.createElement('span');
+      val.className = 'val mono'; val.textContent = fmt(m);
+      const del = document.createElement('button');
+      del.className = 'del'; del.textContent = '✕'; del.title = '삭제';
+      del.addEventListener('click', () => { measures = measures.filter(x => x.id !== m.id); renderList(); });
+      li.append(chip, name, val, del);
+      listEl.appendChild(li);
+    }
+    draw();
+  }
+  function refreshMeasureValues(){
+    [...listEl.querySelectorAll('li')].forEach((li, i) => {
+      li.querySelector('.val').textContent = fmt(measures[i]);
+    });
+  }
+
+  /* ───────── 그리기 ───────── */
+  function draw(){
+    if (!img) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, img.naturalWidth * viewScale, img.naturalHeight * viewScale);
+
+    // 기준 표시
+    if (calMethod === 'quad' || H) drawQuad();
+    if ((calMethod === 'line' || pxPerCm) && refLine && !H)
+      drawLine(refLine, '#FFC93C', pxPerCm ? refLengthInput.value + ' cm (기준)' : '기준선');
+
+    for (const m of measures) drawLine(m, m.color, `${m.name} · ${fmt(m)}`);
+    if (drawing) {
+      const c = mode === 'ref' ? '#FFC93C' : '#4FD1C5';
+      drawLine(drawing, c, mode === 'ref' ? null : fmt(drawing));
+    }
+  }
+
+  function drawQuad(){
+    if (!quadPts.length) return;
+    const pts = quadPts.map(p => ({x: p.x * viewScale, y: p.y * viewScale}));
+    ctx.save();
+    if (pts.length >= 2) {
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, pts[0].y);
+      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+      if (pts.length === 4) ctx.closePath();
+      ctx.strokeStyle = 'rgba(0,0,0,.55)'; ctx.lineWidth = 4; ctx.stroke();
+      ctx.strokeStyle = '#FFC93C'; ctx.lineWidth = 1.8; ctx.setLineDash([7,5]); ctx.stroke();
+      ctx.setLineDash([]);
+      if (pts.length === 4 && H) { ctx.fillStyle = 'rgba(255,201,60,.07)'; ctx.fill(); }
+    }
+    pts.forEach((p, i) => {
+      ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, Math.PI*2);
+      ctx.fillStyle = '#FFC93C'; ctx.fill();
+      ctx.strokeStyle = 'rgba(0,0,0,.6)'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.font = '700 11px "IBM Plex Mono", monospace';
+      ctx.fillStyle = '#FFC93C'; ctx.textAlign = 'left'; ctx.textBaseline = 'bottom';
+      ctx.fillText(String(i + 1), p.x + 9, p.y - 6);
+    });
+    ctx.restore();
+  }
+
+  function drawLine(l, color, label){
+    const x1 = l.x1 * viewScale, y1 = l.y1 * viewScale;
+    const x2 = l.x2 * viewScale, y2 = l.y2 * viewScale;
+    const ang = Math.atan2(y2 - y1, x2 - x1);
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = 'rgba(0,0,0,.55)'; ctx.lineWidth = 4.5;
+    seg(x1, y1, x2, y2); tick(x1, y1, ang); tick(x2, y2, ang);
+    ctx.strokeStyle = color; ctx.lineWidth = 2;
+    seg(x1, y1, x2, y2); tick(x1, y1, ang); tick(x2, y2, ang);
+
+    if (label) {
+      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+      ctx.font = '700 12px "IBM Plex Mono", monospace';
+      const w = ctx.measureText(label).width + 14;
+      const lx = mx - w / 2, ly = my - 26;
+      ctx.fillStyle = 'rgba(18,20,25,.88)';
+      roundRect(lx, ly, w, 20, 6); ctx.fill();
+      ctx.strokeStyle = color; ctx.lineWidth = 1; roundRect(lx, ly, w, 20, 6); ctx.stroke();
+      ctx.fillStyle = color; ctx.textBaseline = 'middle'; ctx.textAlign = 'center';
+      ctx.fillText(label, mx, ly + 10.5);
+    }
+    ctx.restore();
+
+    function seg(a,b,c,d){ ctx.beginPath(); ctx.moveTo(a,b); ctx.lineTo(c,d); ctx.stroke(); }
+    function tick(x,y,a){
+      const t = 7;
+      ctx.beginPath();
+      ctx.moveTo(x + Math.cos(a + Math.PI/2)*t, y + Math.sin(a + Math.PI/2)*t);
+      ctx.lineTo(x + Math.cos(a - Math.PI/2)*t, y + Math.sin(a - Math.PI/2)*t);
+      ctx.stroke();
+    }
+    function roundRect(x,y,w,h,r){
+      ctx.beginPath();
+      ctx.moveTo(x+r, y);
+      ctx.arcTo(x+w, y, x+w, y+h, r);
+      ctx.arcTo(x+w, y+h, x, y+h, r);
+      ctx.arcTo(x, y+h, x, y, r);
+      ctx.arcTo(x, y, x+w, y, r);
+      ctx.closePath();
+    }
+  }
+
+  /* ───────── AI 물건 분석 ───────── */
+  aiBtn.addEventListener('click', async () => {
+    if (!img || (!pxPerCm && !H)) return;
+    const key = apiKeyInput.value.trim();
+    if (!key) {
+      aiResult.innerHTML = '<span style="color:var(--danger)">Gemini API 키를 먼저 입력해 주세요.</span> Google AI Studio(aistudio.google.com) → Get API key에서 무료로 발급할 수 있어요.';
+      apiKeyInput.focus();
+      return;
+    }
+    const model = (aiModelInput.value.trim() || 'gemini-2.5-flash');
+    aiBtn.disabled = true;
+    aiResult.innerHTML = '<span class="spin"></span>사진을 분석하는 중…';
+    try {
+      const MAX = 1024;
+      const s = Math.min(1, MAX / Math.max(img.naturalWidth, img.naturalHeight));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.naturalWidth * s);
+      c.height = Math.round(img.naturalHeight * s);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      const b64 = c.toDataURL('image/jpeg', 0.85).split(',')[1];
+
+      let scaleDesc;
+      if (H) {
+        const W = parseFloat(quadWInput.value), Hcm = parseFloat(quadHInput.value);
+        scaleDesc = `사진 안에 실제 ${W} × ${Hcm} cm 크기의 직사각형 기준 물체가 있으며 사용자가 그 네 모서리를 지정했습니다. 사진은 비스듬히 찍혔을 수 있으니 원근을 감안해 추정하세요.`;
+      } else {
+        const refCm = parseFloat(refLengthInput.value);
+        const refPx = Math.round(Math.hypot(refLine.x2 - refLine.x1, refLine.y2 - refLine.y1) * s);
+        scaleDesc = `사진 안의 기준 물체 한 변이 실제 ${refCm} cm이며, 이 축소 이미지에서 약 ${refPx} 픽셀입니다 (약 ${(refPx/refCm).toFixed(1)} px/cm).`;
+      }
+
+      const prompt =
+`이 사진 속에서 눈에 띄는 물건(집기)들을 찾아 주세요.
+축척 정보: ${scaleDesc}
+이 정보와 물체들의 상대적 크기를 근거로, 각 물건의 대략적인 실제 크기(가로×세로 또는 대표 길이, cm)를 추정하세요.
+반드시 아래 형식의 JSON 배열만 출력하세요. 다른 텍스트, 마크다운 백틱 금지.
+[{"name":"물건 이름(한국어)","size":"약 30×20 cm","confidence":"높음|중간|낮음"}]
+최대 8개까지만.`;
+
+      let res;
+      try {
+        res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
+          body: JSON.stringify({
+            contents: [{
+              parts: [
+                { inline_data: { mime_type: 'image/jpeg', data: b64 } },
+                { text: prompt }
+              ]
+            }],
+            generationConfig: { temperature: 0.2, maxOutputTokens: 1024 }
+          })
+        });
+      } catch (netErr) {
+        throw new Error('NETWORK');
+      }
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const msg = data?.error?.message || `HTTP ${res.status}`;
+        throw new Error('API: ' + msg);
+      }
+      const text = (data.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('\n');
+      // 응답에서 JSON 배열만 안전하게 추출 (앞뒤 설명 문구가 붙어도 동작)
+      const a = text.indexOf('['), z = text.lastIndexOf(']');
+      if (a === -1 || z === -1 || z <= a) throw new Error('PARSE');
+      let items;
+      try { items = JSON.parse(text.slice(a, z + 1)); }
+      catch { throw new Error('PARSE'); }
+      if (!Array.isArray(items) || !items.length) throw new Error('PARSE');
+
+      const rows = items.map(it =>
+        `<tr><td>${esc(it.name)} <span style="color:var(--muted);font-size:11px">${esc(it.confidence || '')}</span></td>` +
+        `<td>${esc(it.size)}</td></tr>`
+      ).join('');
+      aiResult.innerHTML =
+        'AI 추정 결과 (근사치입니다):<table>' + rows + '</table>' +
+        '<div class="note">정확한 값이 필요하면 해당 물건 위에 직접 측정선을 그어보세요.</div>';
+    } catch (err) {
+      console.error(err);
+      const m = String(err && err.message || '');
+      if (m === 'NETWORK') {
+        aiResult.innerHTML =
+          '<span style="color:var(--danger)">Gemini API에 연결할 수 없어요.</span><br>' +
+          '인터넷 연결을 확인해 주세요. 회사망/방화벽에서 <span class="mono" style="font-size:11.5px">generativelanguage.googleapis.com</span> 접속이 차단된 경우에도 실패할 수 있습니다.';
+      } else if (m.startsWith('API:')) {
+        const detail = m.slice(4).trim();
+        let hint = '';
+        if (/API key|invalid|permission|401|403/i.test(detail)) hint = '<br>API 키가 올바른지 확인해 주세요. (Google AI Studio → Get API key)';
+        else if (/quota|429|rate/i.test(detail)) hint = '<br>호출 한도에 걸렸어요. 잠시 후 다시 시도해 주세요.';
+        else if (/not found|404/i.test(detail)) hint = '<br>모델명을 확인해 주세요. (예: gemini-2.5-flash)';
+        aiResult.innerHTML = '<span style="color:var(--danger)">API 오류:</span> ' + esc(detail) + hint;
+      } else if (m === 'PARSE') {
+        aiResult.textContent = 'AI 응답을 해석하지 못했어요. 다시 한 번 눌러 재시도해 주세요. (재시도하면 대부분 성공합니다)';
+      } else {
+        aiResult.textContent = '분석에 실패했어요. 잠시 후 다시 시도해 주세요.';
+      }
+    } finally {
+      aiBtn.disabled = false;
+    }
+  });
+
+  function esc(s){ return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+})();
+</script>
+</body>
+</html>
