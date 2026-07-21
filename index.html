@@ -431,7 +431,7 @@
     const file=new File([blob],name,{type:'image/png'});
     // 1) 모바일: 공유 시트 → "사진에 저장"으로 갤러리에 저장
     if(navigator.canShare && navigator.canShare({files:[file]})){
-      try{ await navigator.share({files:[file],title:'각도 측정'}); return; }
+      try{ await navigator.share({files:[file]}); return; }
       catch(err){ if(err && err.name==='AbortError') return; }
     }
     // 2) 폴백: 다운로드
