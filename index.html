@@ -100,6 +100,12 @@
   .save-sheet img{max-width:100%;max-height:70vh;border-radius:10px;
     -webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto;}
   .save-sheet button{min-width:140px;}
+  .save-note{width:100%;max-width:420px;background:#1A1D22;border-radius:12px;padding:12px 14px;
+    box-shadow:inset 0 0 0 1px rgba(255,176,0,0.35);font-size:12.5px;line-height:1.6;color:var(--text);word-break:keep-all;}
+  .save-note strong{display:block;color:var(--amber);font-size:13px;margin-bottom:4px;}
+  .save-note ol{margin:0;padding-left:18px;}
+  .save-note b{color:var(--cyan);}
+  #btnRotate{color:var(--cyan);font-weight:800;font-size:13px;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 </head>
@@ -168,6 +174,15 @@
 <div class="save-sheet" id="saveSheet" role="dialog" aria-label="이미지 저장">
   <p>이미지를 길게 누른 뒤<br>메뉴에서 사진 앱에 저장을 선택하세요</p>
   <img id="saveImg" alt="저장할 측정 이미지">
+  <div class="save-note">
+    <strong>&lt;주의사항&gt;</strong>
+    <ol>
+      <li>사파리가 아닌 브라우저(크롬, 네이버, 카카오톡 등)에서는 사진 추가 권한이 없으면 저장되지 않습니다.
+        <b>설정 → 앱 → 사용 중인 브라우저 → 사진</b>에서 <b>‘사진 추가만’</b> 또는 <b>‘전체 접근’</b>으로 바꿔 주세요.
+        (iOS 17 이하는 설정 목록에서 브라우저 앱을 바로 찾으면 됩니다.)</li>
+      <li>저장한 이미지는 사진 앱 보관함의 맨 아래(최근 항목)에서 확인할 수 있습니다.</li>
+    </ol>
+  </div>
   <button type="button" id="saveClose" class="ghost">닫기</button>
 </div>
 
