@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>디지털 각도기</title>
+<!-- PWA(홈 화면 설치) 설정: 아이콘 파일은 index.html과 같은 폴더에 둔다 -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#15181D">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="각도기">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <style>
   :root{
     --bg:#15181D; --bezel:#22262D; --panel:#0C0F12;
@@ -74,7 +83,10 @@
 
   .controls{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex-shrink:0;}
   .controls .wide{grid-column:1 / -1;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-  .controls .row3{grid-column:1 / -1;display:grid;grid-template-columns:1fr 1fr 2fr;gap:8px;}
+  .controls .row3{grid-column:1 / -1;display:grid;grid-template-columns:1fr 1fr 1.5fr 1.5fr;gap:8px;}
+  .controls .row3.no-install{grid-template-columns:1fr 1fr 2fr;}
+  button.install{color:var(--panel);background:linear-gradient(180deg,#A9B8FF,#7C9EFF);}
+  #btnInstall.hidden{display:none;}
   button{appearance:none;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;
     color:var(--text);background:linear-gradient(180deg,#2A2F37,#1D2026);border-radius:12px;padding:12px 8px;
     display:flex;align-items:center;justify-content:center;gap:6px;
@@ -107,17 +119,33 @@
   .save-note b{color:var(--cyan);}
   #btnRotate{color:var(--cyan);font-weight:800;font-size:13px;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* 설치 안내 시트(iOS 사파리 등 설치 프롬프트가 없는 브라우저용) */
+  .install-sheet{position:fixed;inset:0;z-index:60;display:none;flex-direction:column;align-items:center;justify-content:center;
+    gap:14px;padding:calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));
+    background:rgba(8,10,12,0.94);}
+  .install-sheet.show{display:flex;}
+  .install-sheet h2{margin:0;font-size:16px;font-weight:800;color:var(--amber);text-align:center;}
+  .install-steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;max-width:360px;width:100%;}
+  .install-steps li{display:flex;align-items:flex-start;gap:10px;background:#1A1D22;border-radius:12px;padding:12px 14px;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,0.06);font-size:13.5px;line-height:1.5;color:var(--text);word-break:keep-all;}
+  .install-steps .n{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--cyan);color:var(--panel);
+    font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+  .install-steps b{color:var(--cyan);}
+  .install-sheet button{min-width:140px;}
 </style>
 </head>
 <body>
 <div id="app">
   <header>
-    <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
-      <path d="M4 20 L20 20" stroke="#33D6C0" stroke-width="2" stroke-linecap="round"/>
-      <path d="M4 20 L18 6" stroke="#33D6C0" stroke-width="2" stroke-linecap="round"/>
-      <path d="M11 20 A9 9 0 0 1 12.3 13.2" stroke="#FFB000" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <svg width="30" height="30" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+      <rect width="64" height="64" rx="14" fill="#000"/>
+      <path d="M12 46 L52 46" stroke="#33E8E8" stroke-width="4" stroke-linecap="round"/>
+      <path d="M12 46 L34 8" stroke="#33E8E8" stroke-width="4" stroke-linecap="round"/>
+      <path d="M26 46 A14 14 0 0 0 19 33.9" stroke="#F5A623" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+      <text x="29" y="42" font-family="-apple-system,'Segoe UI',Arial,sans-serif" font-size="15" font-weight="800" fill="#F5A623">60°</text>
     </svg>
-    <h1>디지털 각도기<span>핀치 확대 · 길게 눌러 삭제 · 저장</span></h1>
+    <h1>디지털 각도기<span>핀치 확대 · 길게 눌러 삭제 · 저장 · 설치</span></h1>
     <div class="mode-seg" id="modeSeg" role="tablist" aria-label="각도기 종류">
       <button type="button" class="seg-btn active" data-mode="3point">3점식</button>
       <button type="button" class="seg-btn" data-mode="2line">두 직선식</button>
@@ -159,10 +187,11 @@
       <button id="btnCamera" class="primary">📷 사진 촬영</button>
       <button id="btnGallery" class="primary">🖼 갤러리에서 선택</button>
     </div>
-    <div class="row3">
+    <div class="row3" id="row3">
       <button id="btnRotate" class="ghost" disabled>⟳ 회전</button>
       <button id="btnReset" class="danger-ghost">⟲ 초기화</button>
       <button id="btnSave" class="save" disabled>💾 저장</button>
+      <button id="btnInstall" class="install" type="button">📲 앱 설치</button>
     </div>
   </div>
 
@@ -177,6 +206,12 @@
   <div class="save-note"><strong>&lt;주의 사항&gt;</strong>저장이 안 되면
     <b>설정 → 앱 → 브라우저 → 사진 → 사진 추가만</b></div>
   <button type="button" id="saveClose" class="ghost">닫기</button>
+</div>
+
+<div class="install-sheet" id="installSheet" role="dialog" aria-label="앱 설치 안내">
+  <h2 id="installTitle">홈 화면에 앱 추가하기</h2>
+  <ol class="install-steps" id="installSteps"></ol>
+  <button type="button" id="installClose" class="ghost">닫기</button>
 </div>
 
 <input type="file" id="fileCamera" accept="image/*" capture="environment" hidden>
@@ -791,6 +826,78 @@
     modeSeg.querySelectorAll('.seg-btn').forEach(x=>x.classList.toggle('active',x===b));
     updateUI();
   }));
+
+  // ===== 앱 설치(PWA) =====
+  const btnInstall=document.getElementById('btnInstall');
+  const row3=document.getElementById('row3');
+  const installSheet=document.getElementById('installSheet');
+  const installTitle=document.getElementById('installTitle');
+  const installSteps=document.getElementById('installSteps');
+  let deferredPrompt=null; // 안드로이드 크롬 등에서 전달되는 beforeinstallprompt 이벤트
+
+  // 이미 홈 화면 앱으로 실행 중이면 설치 버튼을 숨긴다.
+  const IS_STANDALONE=(window.matchMedia && matchMedia('(display-mode: standalone)').matches) ||
+    window.navigator.standalone===true;
+  function hideInstallBtn(){ btnInstall.classList.add('hidden'); row3.classList.add('no-install'); }
+  if(IS_STANDALONE) hideInstallBtn();
+
+  // 서비스 워커 등록(오프라인 캐시 + 일부 브라우저의 설치 조건). file:// 로 열면 건너뜀.
+  if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
+    window.addEventListener('load',()=>{
+      navigator.serviceWorker.register('./sw.js').catch(()=>{});
+    });
+  }
+
+  window.addEventListener('beforeinstallprompt',(e)=>{
+    e.preventDefault(); // 브라우저 자체 배너 대신 '앱 설치' 버튼으로 띄운다
+    deferredPrompt=e;
+  });
+  window.addEventListener('appinstalled',()=>{
+    deferredPrompt=null; hideInstallBtn(); toast('앱이 설치되었습니다');
+  });
+
+  function showInstallSheet(title,steps){
+    installTitle.textContent=title;
+    installSteps.innerHTML=steps.map((s,i)=>`<li><span class="n">${i+1}</span><span>${s}</span></li>`).join('');
+    installSheet.classList.add('show');
+  }
+  document.getElementById('installClose').addEventListener('click',()=>installSheet.classList.remove('show'));
+
+  btnInstall.addEventListener('click',async()=>{
+    // 1) 안드로이드 크롬·삼성 인터넷 등: 브라우저 설치 프롬프트 호출
+    if(deferredPrompt){
+      const ev=deferredPrompt; deferredPrompt=null;
+      try{
+        ev.prompt();
+        const choice=await ev.userChoice;
+        if(choice && choice.outcome==='accepted'){ hideInstallBtn(); }
+        else toast('설치가 취소되었습니다');
+      }catch(err){ toast('설치 창을 열 수 없습니다'); }
+      return;
+    }
+    // 2) 아이폰·아이패드 사파리: 설치 프롬프트가 없으므로 직접 안내
+    if(IS_IOS){
+      showInstallSheet('아이폰·아이패드에 설치하기',[
+        '사파리 하단(아이패드는 상단)의 <b>공유 버튼</b>(네모에 화살표)을 누르세요',
+        '메뉴에서 <b>홈 화면에 추가</b>를 선택하세요',
+        '오른쪽 위 <b>추가</b>를 누르면 홈 화면에 앱 아이콘이 생깁니다',
+        '크롬 등 다른 브라우저에서는 설치가 안 될 수 있으니 <b>사파리</b>로 열어 주세요']);
+      return;
+    }
+    // 3) 안드로이드인데 프롬프트가 아직 없음(이미 설치됨, 조건 미충족, 미지원 브라우저 등)
+    if(IS_MOBILE){
+      showInstallSheet('안드로이드에 설치하기',[
+        '브라우저 오른쪽 위 <b>⋮ 메뉴</b>를 누르세요',
+        '<b>앱 설치</b> 또는 <b>홈 화면에 추가</b>를 선택하세요',
+        '항목이 없으면 이미 설치되었거나, 크롬·삼성 인터넷으로 다시 열어 보세요']);
+      return;
+    }
+    // 4) 데스크톱
+    showInstallSheet('컴퓨터에 설치하기',[
+      '크롬·엣지 주소창 오른쪽의 <b>설치 아이콘</b>(모니터에 화살표)을 누르세요',
+      '또는 브라우저 메뉴에서 <b>앱 설치</b>를 선택하세요',
+      '아이콘이 없으면 이미 설치되었거나 이 브라우저는 설치를 지원하지 않습니다']);
+  });
 
   mode='3point'; // 항상 3점식이 기본
   resizeCanvas(); updateUI();
