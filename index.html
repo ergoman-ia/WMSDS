@@ -211,6 +211,7 @@
 <div class="install-sheet" id="installSheet" role="dialog" aria-label="앱 설치 안내">
   <h2 id="installTitle">홈 화면에 앱 추가하기</h2>
   <ol class="install-steps" id="installSteps"></ol>
+  <button type="button" id="installAction" class="primary" hidden></button>
   <button type="button" id="installClose" class="ghost">닫기</button>
 </div>
 
@@ -856,12 +857,33 @@
     deferredPrompt=null; hideInstallBtn(); toast('앱이 설치되었습니다');
   });
 
-  function showInstallSheet(title,steps){
+  const installAction=document.getElementById('installAction');
+  let installActionFn=null;
+  function showInstallSheet(title,steps,action){
     installTitle.textContent=title;
     installSteps.innerHTML=steps.map((s,i)=>`<li><span class="n">${i+1}</span><span>${s}</span></li>`).join('');
+    if(action){ installAction.textContent=action.label; installActionFn=action.onClick; installAction.hidden=false; }
+    else { installActionFn=null; installAction.hidden=true; }
     installSheet.classList.add('show');
   }
+  installAction.addEventListener('click',()=>{ if(installActionFn) installActionFn(); });
   document.getElementById('installClose').addEventListener('click',()=>installSheet.classList.remove('show'));
+
+  // iOS에서 '진짜 사파리'인지 판별(크롬·엣지·파이어폭스·카카오톡·네이버 등 내장 브라우저 제외)
+  const UA=navigator.userAgent;
+  const IS_IOS_SAFARI=IS_IOS && /Safari\//.test(UA) &&
+    !/CriOS|FxiOS|EdgiOS|OPiOS|OPT\/|Whale|KAKAOTALK|NAVER|Line\/|Instagram|FBAN|FBAV|DuckDuckGo|YaBrowser|Brave/i.test(UA);
+  // 사파리로 넘기기: iOS의 x-safari-https:// 스킴으로 현재 주소를 연다. 안 되면 주소 복사로 대체.
+  function openInSafari(){
+    const target=location.href.replace(/^https?:\/\//,'');
+    const scheme=location.protocol==='https:'?'x-safari-https://':'x-safari-http://';
+    location.href=scheme+target;
+    setTimeout(()=>{ // 스킴이 동작하지 않은 경우(아직 이 페이지에 있음) 주소 복사로 안내
+      if(!document.hidden && navigator.clipboard){
+        navigator.clipboard.writeText(location.href).then(()=>toast('주소를 복사했습니다 · 사파리에 붙여 넣으세요')).catch(()=>{});
+      }
+    },1200);
+  }
 
   btnInstall.addEventListener('click',async()=>{
     // 1) 안드로이드 크롬·삼성 인터넷 등: 브라우저 설치 프롬프트 호출
@@ -875,13 +897,20 @@
       }catch(err){ toast('설치 창을 열 수 없습니다'); }
       return;
     }
-    // 2) 아이폰·아이패드 사파리: 설치 프롬프트가 없으므로 직접 안내
+    // 2) 아이폰·아이패드: 설치는 사파리에서만 가능 → 사파리가 아니면 사파리로 넘긴다
     if(IS_IOS){
+      if(!IS_IOS_SAFARI){
+        showInstallSheet('사파리에서 열어 주세요',[
+          '아이폰·아이패드는 <b>사파리</b>에서만 홈 화면에 앱을 추가할 수 있습니다',
+          '아래 <b>사파리로 열기</b>를 누르면 이 페이지가 사파리에서 열립니다',
+          '열리지 않으면 주소가 복사되니 사파리 주소창에 붙여 넣으세요'],
+          {label:'🧭 사파리로 열기', onClick:openInSafari});
+        return;
+      }
       showInstallSheet('아이폰·아이패드에 설치하기',[
         '사파리 하단(아이패드는 상단)의 <b>공유 버튼</b>(네모에 화살표)을 누르세요',
         '메뉴에서 <b>홈 화면에 추가</b>를 선택하세요',
-        '오른쪽 위 <b>추가</b>를 누르면 홈 화면에 앱 아이콘이 생깁니다',
-        '크롬 등 다른 브라우저에서는 설치가 안 될 수 있으니 <b>사파리</b>로 열어 주세요']);
+        '오른쪽 위 <b>추가</b>를 누르면 홈 화면에 앱 아이콘이 생깁니다']);
       return;
     }
     // 3) 안드로이드인데 프롬프트가 아직 없음(이미 설치됨, 조건 미충족, 미지원 브라우저 등)
