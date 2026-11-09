@@ -48,21 +48,14 @@
     max-width:min(100vw, calc(100dvh * 0.72));margin-inline:auto;
     padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));
     gap:8px;}
-  /* 홈 화면 앱(standalone)에서 iOS 26+가 상단에 입히는 시스템 블러 제거(실기기 검증된 우회법 3종 병행).
-     (1) 맨 위에 칠해진 11px 고정 띠  (2) 헤더를 sticky + 배경색  (3) 로드 직후 고정 패널 슬라이드(스크립트) */
-  .remove-blur{display:none;position:fixed;inset:0 0 auto;height:11px;pointer-events:none;z-index:2147483000;
-    background:var(--bg);-webkit-background-clip:text;background-clip:text;}
-  @media (display-mode: standalone){ .remove-blur{display:block;} header{position:sticky;top:0;background:var(--bg);} }
-  html.standalone .remove-blur{display:block;}
-  html.standalone header{position:sticky;top:0;background:var(--bg);}
-  #blurCover{display:none;position:fixed;inset:0;z-index:2147483646;background:rgba(255,255,255,0.01);
-    pointer-events:none;animation:blur-cover-fade .3s;}
-  #blurPanel{position:fixed;top:0;right:0;bottom:0;width:90%;height:100%;z-index:2147483647;
-    background:rgba(255,255,255,0.01);pointer-events:none;transform:translateX(110%);transition:transform .3s;}
-  @keyframes blur-cover-fade{from{opacity:0}to{opacity:1}}
+  /* 홈 화면 앱(standalone): iOS 26+는 상단에 시스템 블러를 입히므로(페이지에서 끌 수 없음),
+     블러가 덮는 자리에 글자가 오지 않도록 상단 여백을 둔다. 간격은 '매일 성경 읽기' 앱과 동일
+     (상태 표시줄 아래 12px + 제목 위 10px). 브라우저에서는 적용되지 않는다. */
+  @media (display-mode: standalone){ #app{padding-top:calc(max(12px,env(safe-area-inset-top)) + 10px);} }
+  html.standalone #app{padding-top:calc(max(12px,env(safe-area-inset-top)) + 10px);}
 
   header{display:flex;align-items:center;gap:10px;padding:4px;flex-shrink:0;}
-  header h1{font-size:15px;font-weight:700;letter-spacing:0.06em;margin:0;min-width:0;white-space:nowrap;overflow:hidden;}
+  header h1{font-size:17px;font-weight:700;letter-spacing:0.06em;margin:0;min-width:0;white-space:nowrap;overflow:hidden;}
   header span{display:block;font-size:9px;color:var(--text-dim);letter-spacing:0.04em;margin-top:2px;white-space:nowrap;}
   .theme-btn{margin-left:auto;flex-shrink:0;appearance:none;border:none;cursor:pointer;width:30px;height:30px;border-radius:9px;
     background:var(--panel);box-shadow:inset 0 0 0 1px var(--line);font-size:15px;line-height:1;padding:0;color:var(--text);}
@@ -170,7 +163,6 @@
 </style>
 </head>
 <body>
-<div class="remove-blur" aria-hidden="true"></div>
 <div id="app">
   <header>
     <svg width="30" height="30" viewBox="0 0 64 64" fill="none" aria-hidden="true">
@@ -893,18 +885,6 @@
     window.navigator.standalone===true;
   function hideInstallBtn(){ btnInstall.classList.add('hidden'); row3.classList.add('no-install'); }
   if(IS_STANDALONE){ hideInstallBtn(); document.documentElement.classList.add('standalone'); resizeCanvas(); }
-  // iOS 26+ 상단 시스템 블러 제거 우회(3): 고정 패널을 한 번 밀어 넣었다 빼고 화면 밖에 유지
-  if(IS_STANDALONE && IS_IOS){
-    window.addEventListener('load',()=>{
-      const cover=document.createElement('div'); cover.id='blurCover';
-      const panel=document.createElement('div'); panel.id='blurPanel';
-      document.body.append(cover,panel); void panel.offsetWidth;
-      requestAnimationFrame(()=>{
-        cover.style.display='block'; panel.style.transform='translateX(0%)';
-        setTimeout(()=>{ cover.style.display='none'; panel.style.transform='translateX(110%)'; },500);
-      });
-    });
-  }
 
   // 서비스 워커 등록(오프라인 캐시 + 일부 브라우저의 설치 조건). file:// 로 열면 건너뜀.
   if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
