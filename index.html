@@ -6,19 +6,39 @@
 <title>디지털 각도기</title>
 <!-- PWA(홈 화면 설치) 설정: 아이콘 파일은 index.html과 같은 폴더에 둔다 -->
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#15181D">
+<meta name="theme-color" content="#F2F4F7" id="metaTheme">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="각도기">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <style>
+  /* ===== 테마: 기본은 밝은(흰) 테마, html[data-theme="dark"]이면 어두운 테마 ===== */
   :root{
+    --bg:#F2F4F7; --bezel:#E1E5EB; --panel:#FFFFFF;
+    --amber:#D98A00; --amber-dim:rgba(217,138,0,0.25);
+    --cyan:#12A896; --cyan-hi:#2FD0BC; --text:#1B2027; --text-dim:#6B7480; --danger:#D63D3D;
+    --on-accent:#0C0F12;
+    --line:rgba(0,0,0,0.08); --line-hi:rgba(255,255,255,0.7);
+    --grid-line:rgba(0,0,0,0.035); --inset-shadow:rgba(0,0,0,0.12); --drop-shadow:rgba(0,0,0,0.12);
+    --btn-a:#FFFFFF; --btn-b:#E9ECF1; --ghost-a:#F7F8FA; --ghost-b:#ECEFF3;
+    --chip-a:#FFFFFF; --chip-b:#EEF1F5;
+    --chip-press-a:#FBE3E3; --chip-press-b:#F6D2D2; --chip-sel-a:#FFF3D6; --chip-sel-b:#FDE9B8;
+    --overlay-bg:rgba(255,255,255,0.97); --sheet-bg:rgba(242,244,247,0.96);
+    --radius:18px;
+  }
+  html[data-theme="dark"]{
     --bg:#15181D; --bezel:#22262D; --panel:#0C0F12;
     --amber:#FFB000; --amber-dim:rgba(255,176,0,0.35);
-    --cyan:#33D6C0; --text:#C9D1D9; --text-dim:#6B7480; --danger:#FF5C5C;
-    --radius:18px;
+    --cyan:#33D6C0; --cyan-hi:#3EE8CE; --text:#C9D1D9; --text-dim:#6B7480; --danger:#FF5C5C;
+    --on-accent:#0C0F12;
+    --line:rgba(255,255,255,0.05); --line-hi:rgba(255,255,255,0.06);
+    --grid-line:rgba(255,255,255,0.02); --inset-shadow:rgba(0,0,0,0.6); --drop-shadow:rgba(0,0,0,0.35);
+    --btn-a:#2A2F37; --btn-b:#1D2026; --ghost-a:#23272E; --ghost-b:#1A1D22;
+    --chip-a:#20242B; --chip-b:#171A1F;
+    --chip-press-a:#3a1f22; --chip-press-b:#2a1518; --chip-sel-a:#332d1c; --chip-sel-b:#241f13;
+    --overlay-bg:rgba(12,15,18,0.95); --sheet-bg:rgba(8,10,12,0.94);
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; -webkit-user-select:none; user-select:none;}
   html,body{margin:0;padding:0;height:100%;background:var(--bg);color:var(--text);
@@ -28,28 +48,25 @@
     max-width:min(100vw, calc(100dvh * 0.72));margin-inline:auto;
     padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));
     gap:8px;}
-  /* 홈 화면 앱(standalone)으로 실행될 때: 상태 표시줄(시계·배터리) 아래로 내용 전체를 내린다.
-     --sb-top 값을 키우거나 줄여서 여백을 조절할 수 있다. */
-  :root{ --sb-top:75px; }
-  @media (display-mode: standalone){
-    #app{ padding-top:calc(max(env(safe-area-inset-top, 0px), var(--sb-top)) + 10px); }
-  }
-  html.standalone #app{ padding-top:calc(max(env(safe-area-inset-top, 0px), var(--sb-top)) + 10px); }
+  /* 홈 화면 앱(standalone): 상태 표시줄은 apple-mobile-web-app-status-bar-style=black 으로
+     불투명하게 분리되어 앱 화면이 그 아래에서 시작하므로, 별도 상단 여백을 두지 않는다. */
 
   header{display:flex;align-items:center;gap:10px;padding:4px;flex-shrink:0;}
-  header h1{font-size:15px;font-weight:700;letter-spacing:0.06em;margin:0;min-width:0;white-space:nowrap;}
+  header h1{font-size:15px;font-weight:700;letter-spacing:0.06em;margin:0;min-width:0;white-space:nowrap;overflow:hidden;}
   header span{display:block;font-size:9px;color:var(--text-dim);letter-spacing:0.04em;margin-top:2px;white-space:nowrap;}
-  .mode-seg{margin-left:auto;flex-shrink:0;display:flex;gap:3px;padding:3px;border-radius:11px;
-    background:var(--panel);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.05);}
+  .theme-btn{margin-left:auto;flex-shrink:0;appearance:none;border:none;cursor:pointer;width:30px;height:30px;border-radius:9px;
+    background:var(--panel);box-shadow:inset 0 0 0 1px var(--line);font-size:15px;line-height:1;padding:0;color:var(--text);}
+  .mode-seg{flex-shrink:0;display:flex;gap:3px;padding:3px;border-radius:11px;
+    background:var(--panel);box-shadow:inset 0 0 0 1px var(--line);}
   .seg-btn{appearance:none;border:none;cursor:pointer;font-family:inherit;font-size:11.5px;font-weight:700;
     color:var(--text-dim);background:transparent;border-radius:8px;padding:7px 10px;white-space:nowrap;}
-  .seg-btn.active{color:var(--panel);background:linear-gradient(180deg,#3EE8CE,var(--cyan));
-    box-shadow:0 1px 0 rgba(0,0,0,0.35);}
+  .seg-btn.active{color:var(--on-accent);background:linear-gradient(180deg,var(--cyan-hi),var(--cyan));
+    box-shadow:0 1px 0 var(--drop-shadow);}
 
   .display-panel{background:linear-gradient(180deg,var(--bezel),var(--bg));border-radius:var(--radius);
-    padding:3px;flex-shrink:0;box-shadow:0 1px 0 rgba(255,255,255,0.04) inset,0 6px 14px rgba(0,0,0,0.35);}
+    padding:3px;flex-shrink:0;box-shadow:0 1px 0 var(--line-hi) inset,0 6px 14px var(--drop-shadow);}
   .display-screen{background:var(--panel);border-radius:calc(var(--radius) - 3px);padding:10px 16px;
-    display:flex;align-items:center;justify-content:space-between;box-shadow:inset 0 2px 6px rgba(0,0,0,0.6);}
+    display:flex;align-items:center;justify-content:space-between;box-shadow:inset 0 2px 6px var(--inset-shadow);}
   .display-left{display:flex;flex-direction:column;min-width:0;}
   .display-label{font-size:10px;letter-spacing:0.2em;color:var(--text-dim);font-weight:700;}
   #statusText{font-size:11.5px;color:var(--cyan);margin-top:4px;min-height:14px;
@@ -60,8 +77,8 @@
 
   .main{display:flex;gap:8px;flex:1;min-height:0;}
   .stage-wrap{position:relative;flex:1;min-width:0;
-    background:repeating-linear-gradient(0deg,#0000 0 23px,rgba(255,255,255,0.02) 23px 24px);
-    border-radius:var(--radius);overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.05);}
+    background:repeating-linear-gradient(0deg,#0000 0 23px,var(--grid-line) 23px 24px);
+    border-radius:var(--radius);overflow:hidden;box-shadow:inset 0 0 0 1px var(--line);}
   canvas{display:block;width:100%;height:100%;touch-action:none;}
   .empty-hint{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
     gap:10px;pointer-events:none;padding:20px;text-align:center;}
@@ -70,57 +87,57 @@
 
   .angle-side{width:78px;flex-shrink:0;background:var(--panel);border-radius:14px;
     display:flex;flex-direction:column;padding:8px 6px;gap:6px;
-    box-shadow:inset 0 0 0 1px rgba(255,255,255,0.05);}
+    box-shadow:inset 0 0 0 1px var(--line);}
   .side-title{font-size:9px;letter-spacing:0.15em;color:var(--text-dim);font-weight:700;text-align:center;flex-shrink:0;}
   .side-scroll{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:6px;}
   .side-scroll::-webkit-scrollbar{width:0;}
   .side-empty{font-size:10px;color:var(--text-dim);text-align:center;margin-top:10px;line-height:1.5;opacity:0.7;}
   .angle-chip{display:flex;flex-direction:column;align-items:center;gap:3px;
-    background:linear-gradient(180deg,#20242B,#171A1F);border-radius:10px;padding:8px 4px;
-    box-shadow:inset 0 0 0 1px rgba(255,255,255,0.05);cursor:pointer;position:relative;}
+    background:linear-gradient(180deg,var(--chip-a),var(--chip-b));border-radius:10px;padding:8px 4px;
+    box-shadow:inset 0 0 0 1px var(--line);cursor:pointer;position:relative;}
   .angle-chip .top{display:flex;align-items:center;gap:4px;}
   .angle-chip .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
   .angle-chip .num{font-size:9px;color:var(--text-dim);font-weight:700;}
   .angle-chip .val{font-size:14px;font-weight:700;color:var(--text);
     font-family:"SFMono-Regular",Consolas,Menlo,monospace;}
-  .angle-chip.pressing{background:linear-gradient(180deg,#3a1f22,#2a1518);box-shadow:inset 0 0 0 1px var(--danger);}
-  .angle-chip.selected{background:linear-gradient(180deg,#332d1c,#241f13);
-    box-shadow:inset 0 0 0 2px var(--amber),0 0 8px rgba(255,176,0,0.35);}
+  .angle-chip.pressing{background:linear-gradient(180deg,var(--chip-press-a),var(--chip-press-b));box-shadow:inset 0 0 0 1px var(--danger);}
+  .angle-chip.selected{background:linear-gradient(180deg,var(--chip-sel-a),var(--chip-sel-b));
+    box-shadow:inset 0 0 0 2px var(--amber),0 0 8px var(--amber-dim);}
   .angle-chip.selected .val{color:var(--amber);}
 
   .controls{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex-shrink:0;}
   .controls .wide{grid-column:1 / -1;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
   .controls .row3{grid-column:1 / -1;display:grid;grid-template-columns:1fr 1fr 1.5fr 1.5fr;gap:8px;}
   .controls .row3.no-install{grid-template-columns:1fr 1fr 2fr;}
-  button.install{color:var(--panel);background:linear-gradient(180deg,#A9B8FF,#7C9EFF);}
+  button.install{color:var(--on-accent);background:linear-gradient(180deg,#A9B8FF,#7C9EFF);}
   #btnInstall.hidden{display:none;}
   button{appearance:none;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;
-    color:var(--text);background:linear-gradient(180deg,#2A2F37,#1D2026);border-radius:12px;padding:12px 8px;
+    color:var(--text);background:linear-gradient(180deg,var(--btn-a),var(--btn-b));border-radius:12px;padding:12px 8px;
     display:flex;align-items:center;justify-content:center;gap:6px;
-    box-shadow:0 2px 0 rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.06);}
-  button:active{transform:translateY(1px);box-shadow:0 1px 0 rgba(0,0,0,0.5),inset 0 1px 3px rgba(0,0,0,0.5);}
-  button.primary{color:var(--panel);background:linear-gradient(180deg,#3EE8CE,var(--cyan));}
-  button.save{color:var(--panel);background:linear-gradient(180deg,#FFC94D,var(--amber));}
-  button.ghost{color:var(--text-dim);background:linear-gradient(180deg,#23272E,#1A1D22);font-weight:600;font-size:12px;}
-  button.danger-ghost{color:var(--danger);background:linear-gradient(180deg,#23272E,#1A1D22);font-weight:600;font-size:12px;}
+    box-shadow:0 2px 0 var(--drop-shadow),inset 0 1px 0 var(--line-hi);}
+  button:active{transform:translateY(1px);box-shadow:0 1px 0 var(--drop-shadow),inset 0 1px 3px var(--inset-shadow);}
+  button.primary{color:var(--on-accent);background:linear-gradient(180deg,var(--cyan-hi),var(--cyan));}
+  button.save{color:var(--on-accent);background:linear-gradient(180deg,#FFC94D,#FFB000);}
+  button.ghost{color:var(--text-dim);background:linear-gradient(180deg,var(--ghost-a),var(--ghost-b));font-weight:600;font-size:12px;}
+  button.danger-ghost{color:var(--danger);background:linear-gradient(180deg,var(--ghost-a),var(--ghost-b));font-weight:600;font-size:12px;}
   button:disabled{opacity:0.35;pointer-events:none;}
 
   #instructions{text-align:center;font-size:11.5px;color:var(--text-dim);margin:0;padding-bottom:2px;flex-shrink:0;line-height:1.5;}
 
   .toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(10px);
-    background:rgba(12,15,18,0.95);color:var(--text);font-size:12.5px;font-weight:600;padding:10px 16px;border-radius:20px;
-    box-shadow:0 4px 16px rgba(0,0,0,0.5),inset 0 0 0 1px rgba(255,255,255,0.08);opacity:0;pointer-events:none;
+    background:var(--overlay-bg);color:var(--text);font-size:12.5px;font-weight:600;padding:10px 16px;border-radius:20px;
+    box-shadow:0 4px 16px var(--drop-shadow),inset 0 0 0 1px var(--line);opacity:0;pointer-events:none;
     transition:opacity .2s,transform .2s;z-index:50;max-width:80vw;text-align:center;}
   .save-sheet{position:fixed;inset:0;z-index:60;display:none;flex-direction:column;align-items:center;justify-content:center;
     gap:12px;overflow:hidden;padding:calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));
-    background:rgba(8,10,12,0.94);}
+    background:var(--sheet-bg);}
   .save-sheet.show{display:flex;}
   .save-sheet p{flex-shrink:0;margin:0;font-size:14px;font-weight:700;color:var(--amber);text-align:center;line-height:1.5;}
   .save-sheet img{flex:0 1 auto;min-height:0;max-width:100%;max-height:100%;object-fit:contain;border-radius:10px;
     -webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto;}
   .save-sheet button{flex-shrink:0;min-width:140px;}
-  .save-note{flex-shrink:0;max-width:420px;background:#1A1D22;border-radius:10px;padding:8px 12px;
-    box-shadow:inset 0 0 0 1px rgba(255,176,0,0.35);font-size:12px;line-height:1.5;color:var(--text);
+  .save-note{flex-shrink:0;max-width:420px;background:var(--ghost-b);border-radius:10px;padding:8px 12px;
+    box-shadow:inset 0 0 0 1px var(--amber-dim);font-size:12px;line-height:1.5;color:var(--text);
     text-align:center;word-break:keep-all;}
   .save-note strong{color:var(--amber);margin-right:4px;}
   .save-note b{color:var(--cyan);}
@@ -130,13 +147,13 @@
   /* 설치 안내 시트(iOS 사파리 등 설치 프롬프트가 없는 브라우저용) */
   .install-sheet{position:fixed;inset:0;z-index:60;display:none;flex-direction:column;align-items:center;justify-content:center;
     gap:14px;padding:calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));
-    background:rgba(8,10,12,0.94);}
+    background:var(--sheet-bg);}
   .install-sheet.show{display:flex;}
   .install-sheet h2{margin:0;font-size:16px;font-weight:800;color:var(--amber);text-align:center;}
   .install-steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;max-width:360px;width:100%;}
-  .install-steps li{display:flex;align-items:flex-start;gap:10px;background:#1A1D22;border-radius:12px;padding:12px 14px;
-    box-shadow:inset 0 0 0 1px rgba(255,255,255,0.06);font-size:13.5px;line-height:1.5;color:var(--text);word-break:keep-all;}
-  .install-steps .n{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--cyan);color:var(--panel);
+  .install-steps li{display:flex;align-items:flex-start;gap:10px;background:var(--ghost-b);border-radius:12px;padding:12px 14px;
+    box-shadow:inset 0 0 0 1px var(--line);font-size:13.5px;line-height:1.5;color:var(--text);word-break:keep-all;}
+  .install-steps .n{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--cyan);color:#fff;
     font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;margin-top:1px;}
   .install-steps b{color:var(--cyan);}
   .install-sheet button{min-width:140px;}
@@ -152,7 +169,8 @@
       <path d="M26 46 A14 14 0 0 0 19 33.9" stroke="#F5A623" stroke-width="3.2" fill="none" stroke-linecap="round"/>
       <text x="29" y="42" font-family="-apple-system,'Segoe UI',Arial,sans-serif" font-size="15" font-weight="800" fill="#F5A623">60°</text>
     </svg>
-    <h1>디지털 각도기<span>핀치 확대 · 길게 눌러 삭제 · 저장 · 설치</span></h1>
+    <h1>디지털 각도기<span>핀치 확대 · 길게 눌러 삭제 · 저장</span></h1>
+    <button type="button" class="theme-btn" id="btnTheme" aria-label="어둡게/밝게 전환">☾</button>
     <div class="mode-seg" id="modeSeg" role="tablist" aria-label="각도기 종류">
       <button type="button" class="seg-btn active" data-mode="3point">3점식</button>
       <button type="button" class="seg-btn" data-mode="2line">두 직선식</button>
@@ -241,6 +259,22 @@
   const btnRotate=document.getElementById('btnRotate');
   const modeSeg=document.getElementById('modeSeg');
   const toastEl=document.getElementById('toast');
+
+  // ===== 테마(밝게/어둡게) — 기본은 밝게, 선택은 기기에 저장 =====
+  const btnTheme=document.getElementById('btnTheme');
+  const metaTheme=document.getElementById('metaTheme');
+  function applyTheme(t){
+    if(t==='dark') document.documentElement.setAttribute('data-theme','dark');
+    else document.documentElement.removeAttribute('data-theme');
+    btnTheme.textContent = t==='dark' ? '☀' : '☾';
+    btnTheme.setAttribute('aria-label', t==='dark' ? '밝게 전환' : '어둡게 전환');
+    if(metaTheme) metaTheme.setAttribute('content', t==='dark' ? '#15181D' : '#F2F4F7');
+    try{ localStorage.setItem('angle-theme',t); }catch(e){}
+  }
+  let savedTheme='light'; try{ savedTheme=localStorage.getItem('angle-theme')||'light'; }catch(e){}
+  applyTheme(savedTheme);
+  btnTheme.addEventListener('click',()=>applyTheme(
+    document.documentElement.getAttribute('data-theme')==='dark' ? 'light' : 'dark'));
 
   // 모바일·태블릿(터치가 주 입력인 기기) 판별. 마우스/터치패드가 주 입력이면 데스크톱으로 본다.
   const IS_MOBILE=!!(
