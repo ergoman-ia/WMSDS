@@ -28,10 +28,17 @@
     max-width:min(100vw, calc(100dvh * 0.72));margin-inline:auto;
     padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));
     gap:8px;}
+  /* 홈 화면 앱(standalone)으로 실행될 때: 상태 표시줄(시계·배터리) 아래로 내용 전체를 내린다.
+     --sb-top 값을 키우거나 줄여서 여백을 조절할 수 있다. */
+  :root{ --sb-top:75px; }
+  @media (display-mode: standalone){
+    #app{ padding-top:calc(max(env(safe-area-inset-top, 0px), var(--sb-top)) + 10px); }
+  }
+  html.standalone #app{ padding-top:calc(max(env(safe-area-inset-top, 0px), var(--sb-top)) + 10px); }
 
   header{display:flex;align-items:center;gap:10px;padding:4px;flex-shrink:0;}
-  header h1{font-size:15px;font-weight:700;letter-spacing:0.06em;margin:0;}
-  header span{display:block;font-size:10px;color:var(--text-dim);letter-spacing:0.1em;margin-top:2px;}
+  header h1{font-size:15px;font-weight:700;letter-spacing:0.06em;margin:0;min-width:0;white-space:nowrap;}
+  header span{display:block;font-size:9px;color:var(--text-dim);letter-spacing:0.04em;margin-top:2px;white-space:nowrap;}
   .mode-seg{margin-left:auto;flex-shrink:0;display:flex;gap:3px;padding:3px;border-radius:11px;
     background:var(--panel);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.05);}
   .seg-btn{appearance:none;border:none;cursor:pointer;font-family:inherit;font-size:11.5px;font-weight:700;
@@ -840,7 +847,7 @@
   const IS_STANDALONE=(window.matchMedia && matchMedia('(display-mode: standalone)').matches) ||
     window.navigator.standalone===true;
   function hideInstallBtn(){ btnInstall.classList.add('hidden'); row3.classList.add('no-install'); }
-  if(IS_STANDALONE) hideInstallBtn();
+  if(IS_STANDALONE){ hideInstallBtn(); document.documentElement.classList.add('standalone'); resizeCanvas(); }
 
   // 서비스 워커 등록(오프라인 캐시 + 일부 브라우저의 설치 조건). file:// 로 열면 건너뜀.
   if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
